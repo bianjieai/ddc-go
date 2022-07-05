@@ -1,0 +1,41 @@
+syntax = "proto3";
+package bianjieai.ddc;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/bianjieai/ddc-go/ddc";
+option (gogoproto.goproto_getters_all) = false;
+
+enum Role {
+  OPERATOR 				= 0;
+  PLATFORM_MANAGER      = 1;
+  CONSUMER 				= 2;
+}
+
+enum State {
+  FROZEN = 0;
+  ACTIVE = 1;
+}
+
+enum Method {
+  MINT 				    = 0;
+  EDIT 			  		= 1;
+  BURN 					= 2;
+  TRANSFER 				= 3;
+  DDCAPPROVE  		    = 4;
+  ACCOUNTAPPROVE 	    = 5;
+  FREEZE                = 6;
+  UNFREEZE              = 7;
+  BATCHBURN				= 8;
+  BATCHTRANSFER         = 9;
+}
+
+message AccountInfo {
+  string address        = 1;
+  string did         	= 2;
+  string name        	= 3;
+  Role   role		    = 4;
+  string leader_did 	= 5;
+  State platform_state 	= 6;
+  State operator_state  = 7;
+}
