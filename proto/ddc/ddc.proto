@@ -40,7 +40,7 @@ message AccountInfo {
   string did         	  = 2  [(gogoproto.customname) = "DID"];
   string name        	  = 3;
   Role   role		        = 4;
-  string leader_did 	  = 5  [(gogoproto.customname) = "leaderDID"];
+  string leader_did 	  = 5  [(gogoproto.customname) = "LeaderDID"];
   State platform_state 	= 6;
   State operator_state  = 7;
 }

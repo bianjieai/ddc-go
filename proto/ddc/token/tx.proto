@@ -58,7 +58,7 @@ message MsgFreeze {
 
     Protocol protocol         		= 1;
     string   denom         			= 2;
-    string token_id         	    = 3 [(gogoproto.customname) = "tokenID"];
+    string   token_id         	    = 3 [(gogoproto.customname) = "TokenID"];
     string   operator				= 4;
 }
 
@@ -73,7 +73,7 @@ message MsgUnfreeze {
 
     Protocol protocol         		= 1;
     string   denom         			= 2;
-    string   token_id         	    = 3 [(gogoproto.customname) = "tokenID"];
+    string   token_id         	    = 3 [(gogoproto.customname) = "TokenID"];
     string   operator				= 4;
 }
 
@@ -88,7 +88,7 @@ message MsgBatchBurn {
 
     Protocol protocol         		= 1;
     string   denom         			= 2;
-    repeated string   token_ids     = 3 [(gogoproto.customname) = "tokenIDs"];
+    repeated string   token_ids     = 3 [(gogoproto.customname) = "TokenIDs"];
     string   operator				= 4;
 }
 
@@ -103,7 +103,7 @@ message MsgBatchTransfer {
 
     Protocol protocol         		= 1;
     string   denom         			= 2;
-    repeated string  token_ids      = 3 [(gogoproto.customname) = "tokenIDs"];
+    repeated string  token_ids      = 3 [(gogoproto.customname) = "TokenIDs"];
     repeated uint64  amount         = 4;
     string from             	    = 5;
     string to             	        = 6;
