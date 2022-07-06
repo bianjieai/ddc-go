@@ -1,10 +1,14 @@
 package cli
 
 import (
-	"github.com/bianjieai/ddc-go/ddc"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
+
+	"github.com/bianjieai/ddc-go/ddc"
+	authcli "github.com/bianjieai/ddc-go/ddc/core/auth/cli"
+	feecli "github.com/bianjieai/ddc-go/ddc/core/fee/cli"
+	tokencli "github.com/bianjieai/ddc-go/ddc/core/token/cli"
 )
 
 // NewTxCmd returns the transaction commands for this module
@@ -18,7 +22,9 @@ func NewTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-	// TODO
+		authcli.NewTxCmd(),
+		feecli.NewTxCmd(),
+		tokencli.NewTxCmd(),
 	)
 	return cmd
 }

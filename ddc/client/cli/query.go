@@ -1,9 +1,14 @@
 package cli
 
 import (
-	"github.com/bianjieai/ddc-go/ddc"
-	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/spf13/cobra"
+
+	"github.com/cosmos/cosmos-sdk/client"
+
+	"github.com/bianjieai/ddc-go/ddc"
+	authcli "github.com/bianjieai/ddc-go/ddc/core/auth/cli"
+	feecli "github.com/bianjieai/ddc-go/ddc/core/fee/cli"
+	tokencli "github.com/bianjieai/ddc-go/ddc/core/token/cli"
 )
 
 // GetQueryCmd returns the cli query commands for the module.
@@ -17,8 +22,9 @@ func GetQueryCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(
-	// TODO
+		authcli.GetQueryCmd(),
+		feecli.GetQueryCmd(),
+		tokencli.GetQueryCmd(),
 	)
-
 	return cmd
 }
