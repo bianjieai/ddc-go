@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"github.com/cosmos/cosmos-sdk/codec"
+	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -17,4 +18,9 @@ func NewKeeper(cdc codec.Codec, key sdk.StoreKey) Keeper {
 		cdc:      cdc,
 		storeKey: key,
 	}
+}
+
+func (k Keeper) prefixStore(ctx sdk.Context) prefix.Store {
+	store := ctx.KVStore(k.storeKey)
+	return prefix.NewStore(store, []byte(SubModule))
 }
