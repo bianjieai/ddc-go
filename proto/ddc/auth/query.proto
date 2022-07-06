@@ -5,7 +5,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "ddc/ddc.proto";
 
-option go_package = "github.com/bianjieai/ddc-go/ddc/auth";
+option go_package = "github.com/bianjieai/ddc-go/ddc/core/auth";
 
 
 // Query defines the gRPC querier service.

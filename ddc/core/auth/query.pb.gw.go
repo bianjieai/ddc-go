@@ -13,7 +13,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/bianjieai/ddc-go/ddc"
+	"github.com/bianjieai/ddc-go/ddc/core"
 	"github.com/golang/protobuf/descriptor"
 	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -109,13 +109,13 @@ func request_Query_Functions_0(ctx context.Context, marshaler runtime.Marshaler,
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "role")
 	}
 
-	e, err = runtime.Enum(val, ddc.Role_value)
+	e, err = runtime.Enum(val, core.Role_value)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "role", err)
 	}
 
-	protoReq.Role = ddc.Role(e)
+	protoReq.Role = core.Role(e)
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
@@ -146,13 +146,13 @@ func local_request_Query_Functions_0(ctx context.Context, marshaler runtime.Mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "role")
 	}
 
-	e, err = runtime.Enum(val, ddc.Role_value)
+	e, err = runtime.Enum(val, core.Role_value)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "role", err)
 	}
 
-	protoReq.Role = ddc.Role(e)
+	protoReq.Role = core.Role(e)
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)

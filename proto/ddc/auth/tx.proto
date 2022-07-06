@@ -4,7 +4,7 @@ package bianjieai.ddc.auth;
 import "gogoproto/gogo.proto";
 import "ddc/ddc.proto";
 
-option go_package = "github.com/bianjieai/ddc-go/ddc/auth";
+option go_package = "github.com/bianjieai/ddc-go/ddc/core/auth";
 // Msg defines the node Msg service.
 service Msg {
     // AddAccount defines a method for creating a account.
@@ -23,6 +23,8 @@ service Msg {
     rpc ApproveCrossPlatform(MsgApproveCrossPlatform) returns (MsgApproveCrossPlatformResponse);
     // SyncPlatformDID defines a method for syncing did to a new platform
     rpc SyncPlatformDID(MsgSyncPlatformDID) returns (MsgSyncPlatformDIDResponse);
+    // UpgradeToDDC defines a method for upgrade denom to ddc contract
+    rpc UpgradeToDDC(MsgUpgradeToDDC) returns (MsgUpgradeToDDCResponse);
 }
 
 // MsgAddAccount defines the Msg/AddAccount request type.
@@ -145,4 +147,18 @@ message MsgSyncPlatformDID {
 
 // MsgSyncPlatformDIDResponse defines the Msg/SyncPlatformDID response type.
 message MsgSyncPlatformDIDResponse {
+}
+
+// MsgUpgradeToDDC defines the Msg/UpgradeToDDC request type.
+message MsgUpgradeToDDC {
+    option (gogoproto.equal)           = false;
+    option (gogoproto.goproto_getters) = false;
+
+    Protocol protocol             = 2;
+    string   denom                = 3;
+    string   operator             = 5;
+}
+
+// MsgUpgradeToDDCResponse defines the Msg/UpgradeToDDC response type.
+message MsgUpgradeToDDCResponse {
 }

@@ -6,7 +6,7 @@ package auth
 import (
 	context "context"
 	fmt "fmt"
-	ddc "github.com/bianjieai/ddc-go/ddc"
+	core "github.com/bianjieai/ddc-go/ddc/core"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
@@ -31,12 +31,12 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // MsgAddAccount defines the Msg/AddAccount request type.
 type MsgAddAccount struct {
-	Address   string   `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	Did       string   `protobuf:"bytes,2,opt,name=did,proto3" json:"did,omitempty"`
-	Name      string   `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Role      ddc.Role `protobuf:"varint,4,opt,name=role,proto3,enum=bianjieai.ddc.Role" json:"role,omitempty"`
-	LeaderDID string   `protobuf:"bytes,5,opt,name=leader_did,json=leaderDid,proto3" json:"leader_did,omitempty"`
-	Sender    string   `protobuf:"bytes,6,opt,name=sender,proto3" json:"sender,omitempty"`
+	Address   string    `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Did       string    `protobuf:"bytes,2,opt,name=did,proto3" json:"did,omitempty"`
+	Name      string    `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	Role      core.Role `protobuf:"varint,4,opt,name=role,proto3,enum=bianjieai.ddc.Role" json:"role,omitempty"`
+	LeaderDID string    `protobuf:"bytes,5,opt,name=leader_did,json=leaderDid,proto3" json:"leader_did,omitempty"`
+	Sender    string    `protobuf:"bytes,6,opt,name=sender,proto3" json:"sender,omitempty"`
 }
 
 func (m *MsgAddAccount) Reset()         { *m = MsgAddAccount{} }
@@ -111,12 +111,12 @@ var xxx_messageInfo_MsgAddAccountResponse proto.InternalMessageInfo
 
 // MsgAddBatchAccount defines the Msg/MsgAddBatchAccount request type.
 type MsgAddBatchAccount struct {
-	Address   []string   `protobuf:"bytes,1,rep,name=address,proto3" json:"address,omitempty"`
-	Did       []string   `protobuf:"bytes,2,rep,name=did,proto3" json:"did,omitempty"`
-	Name      []string   `protobuf:"bytes,3,rep,name=name,proto3" json:"name,omitempty"`
-	Role      []ddc.Role `protobuf:"varint,4,rep,packed,name=role,proto3,enum=bianjieai.ddc.Role" json:"role,omitempty"`
-	LeaderDID string     `protobuf:"bytes,5,opt,name=leader_did,json=leaderDid,proto3" json:"leader_did,omitempty"`
-	Sender    string     `protobuf:"bytes,6,opt,name=sender,proto3" json:"sender,omitempty"`
+	Address   []string    `protobuf:"bytes,1,rep,name=address,proto3" json:"address,omitempty"`
+	Did       []string    `protobuf:"bytes,2,rep,name=did,proto3" json:"did,omitempty"`
+	Name      []string    `protobuf:"bytes,3,rep,name=name,proto3" json:"name,omitempty"`
+	Role      []core.Role `protobuf:"varint,4,rep,packed,name=role,proto3,enum=bianjieai.ddc.Role" json:"role,omitempty"`
+	LeaderDID string      `protobuf:"bytes,5,opt,name=leader_did,json=leaderDid,proto3" json:"leader_did,omitempty"`
+	Sender    string      `protobuf:"bytes,6,opt,name=sender,proto3" json:"sender,omitempty"`
 }
 
 func (m *MsgAddBatchAccount) Reset()         { *m = MsgAddBatchAccount{} }
@@ -191,10 +191,10 @@ var xxx_messageInfo_MsgAddBatchAccountResponse proto.InternalMessageInfo
 
 // MsgUpdateAccountState defines the Msg/UpdateAccountState request type.
 type MsgUpdateAccountState struct {
-	Address             string    `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	State               ddc.State `protobuf:"varint,2,opt,name=state,proto3,enum=bianjieai.ddc.State" json:"state,omitempty"`
-	ChangePlatformState bool      `protobuf:"varint,3,opt,name=change_platform_state,json=changePlatformState,proto3" json:"change_platform_state,omitempty"`
-	Sender              string    `protobuf:"bytes,4,opt,name=sender,proto3" json:"sender,omitempty"`
+	Address             string     `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	State               core.State `protobuf:"varint,2,opt,name=state,proto3,enum=bianjieai.ddc.State" json:"state,omitempty"`
+	ChangePlatformState bool       `protobuf:"varint,3,opt,name=change_platform_state,json=changePlatformState,proto3" json:"change_platform_state,omitempty"`
+	Sender              string     `protobuf:"bytes,4,opt,name=sender,proto3" json:"sender,omitempty"`
 }
 
 func (m *MsgUpdateAccountState) Reset()         { *m = MsgUpdateAccountState{} }
@@ -345,11 +345,11 @@ var xxx_messageInfo_MsgDeleteAccountResponse proto.InternalMessageInfo
 
 // MsgAddFunction defines the Msg/AddFunction request type.
 type MsgAddFunction struct {
-	Role     ddc.Role     `protobuf:"varint,1,opt,name=role,proto3,enum=bianjieai.ddc.Role" json:"role,omitempty"`
-	Protocol ddc.Protocol `protobuf:"varint,2,opt,name=protocol,proto3,enum=bianjieai.ddc.Protocol" json:"protocol,omitempty"`
-	Denom    string       `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
-	Function ddc.Function `protobuf:"varint,4,opt,name=function,proto3,enum=bianjieai.ddc.Function" json:"function,omitempty"`
-	Operator string       `protobuf:"bytes,5,opt,name=operator,proto3" json:"operator,omitempty"`
+	Role     core.Role     `protobuf:"varint,1,opt,name=role,proto3,enum=bianjieai.ddc.Role" json:"role,omitempty"`
+	Protocol core.Protocol `protobuf:"varint,2,opt,name=protocol,proto3,enum=bianjieai.ddc.Protocol" json:"protocol,omitempty"`
+	Denom    string        `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
+	Function core.Function `protobuf:"varint,4,opt,name=function,proto3,enum=bianjieai.ddc.Function" json:"function,omitempty"`
+	Operator string        `protobuf:"bytes,5,opt,name=operator,proto3" json:"operator,omitempty"`
 }
 
 func (m *MsgAddFunction) Reset()         { *m = MsgAddFunction{} }
@@ -424,11 +424,11 @@ var xxx_messageInfo_MsgAddFunctionResponse proto.InternalMessageInfo
 
 // MsgDeleteFunction defines the Msg/DeleteFunction request type.
 type MsgDeleteFunction struct {
-	Role     ddc.Role     `protobuf:"varint,1,opt,name=role,proto3,enum=bianjieai.ddc.Role" json:"role,omitempty"`
-	Protocol ddc.Protocol `protobuf:"varint,2,opt,name=protocol,proto3,enum=bianjieai.ddc.Protocol" json:"protocol,omitempty"`
-	Denom    string       `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
-	Function ddc.Function `protobuf:"varint,4,opt,name=function,proto3,enum=bianjieai.ddc.Function" json:"function,omitempty"`
-	Operator string       `protobuf:"bytes,5,opt,name=operator,proto3" json:"operator,omitempty"`
+	Role     core.Role     `protobuf:"varint,1,opt,name=role,proto3,enum=bianjieai.ddc.Role" json:"role,omitempty"`
+	Protocol core.Protocol `protobuf:"varint,2,opt,name=protocol,proto3,enum=bianjieai.ddc.Protocol" json:"protocol,omitempty"`
+	Denom    string        `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
+	Function core.Function `protobuf:"varint,4,opt,name=function,proto3,enum=bianjieai.ddc.Function" json:"function,omitempty"`
+	Operator string        `protobuf:"bytes,5,opt,name=operator,proto3" json:"operator,omitempty"`
 }
 
 func (m *MsgDeleteFunction) Reset()         { *m = MsgDeleteFunction{} }
@@ -655,6 +655,83 @@ func (m *MsgSyncPlatformDIDResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgSyncPlatformDIDResponse proto.InternalMessageInfo
 
+// MsgUpgradeToDDC defines the Msg/UpgradeToDDC request type.
+type MsgUpgradeToDDC struct {
+	Protocol core.Protocol `protobuf:"varint,2,opt,name=protocol,proto3,enum=bianjieai.ddc.Protocol" json:"protocol,omitempty"`
+	Denom    string        `protobuf:"bytes,3,opt,name=denom,proto3" json:"denom,omitempty"`
+	Operator string        `protobuf:"bytes,5,opt,name=operator,proto3" json:"operator,omitempty"`
+}
+
+func (m *MsgUpgradeToDDC) Reset()         { *m = MsgUpgradeToDDC{} }
+func (m *MsgUpgradeToDDC) String() string { return proto.CompactTextString(m) }
+func (*MsgUpgradeToDDC) ProtoMessage()    {}
+func (*MsgUpgradeToDDC) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ca54b1c07b1b0571, []int{16}
+}
+func (m *MsgUpgradeToDDC) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpgradeToDDC) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpgradeToDDC.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpgradeToDDC) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpgradeToDDC.Merge(m, src)
+}
+func (m *MsgUpgradeToDDC) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpgradeToDDC) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpgradeToDDC.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpgradeToDDC proto.InternalMessageInfo
+
+// MsgUpgradeToDDCResponse defines the Msg/UpgradeToDDC response type.
+type MsgUpgradeToDDCResponse struct {
+}
+
+func (m *MsgUpgradeToDDCResponse) Reset()         { *m = MsgUpgradeToDDCResponse{} }
+func (m *MsgUpgradeToDDCResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpgradeToDDCResponse) ProtoMessage()    {}
+func (*MsgUpgradeToDDCResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ca54b1c07b1b0571, []int{17}
+}
+func (m *MsgUpgradeToDDCResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgUpgradeToDDCResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgUpgradeToDDCResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgUpgradeToDDCResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpgradeToDDCResponse.Merge(m, src)
+}
+func (m *MsgUpgradeToDDCResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgUpgradeToDDCResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpgradeToDDCResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgUpgradeToDDCResponse proto.InternalMessageInfo
+
 func init() {
 	proto.RegisterType((*MsgAddAccount)(nil), "bianjieai.ddc.auth.MsgAddAccount")
 	proto.RegisterType((*MsgAddAccountResponse)(nil), "bianjieai.ddc.auth.MsgAddAccountResponse")
@@ -672,61 +749,67 @@ func init() {
 	proto.RegisterType((*MsgApproveCrossPlatformResponse)(nil), "bianjieai.ddc.auth.MsgApproveCrossPlatformResponse")
 	proto.RegisterType((*MsgSyncPlatformDID)(nil), "bianjieai.ddc.auth.MsgSyncPlatformDID")
 	proto.RegisterType((*MsgSyncPlatformDIDResponse)(nil), "bianjieai.ddc.auth.MsgSyncPlatformDIDResponse")
+	proto.RegisterType((*MsgUpgradeToDDC)(nil), "bianjieai.ddc.auth.MsgUpgradeToDDC")
+	proto.RegisterType((*MsgUpgradeToDDCResponse)(nil), "bianjieai.ddc.auth.MsgUpgradeToDDCResponse")
 }
 
 func init() { proto.RegisterFile("ddc/auth/tx.proto", fileDescriptor_ca54b1c07b1b0571) }
 
 var fileDescriptor_ca54b1c07b1b0571 = []byte{
-	// 784 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x56, 0xc1, 0x6e, 0xd3, 0x4c,
-	0x10, 0x8e, 0x93, 0x34, 0x7f, 0x3a, 0xbf, 0x92, 0xbf, 0xdd, 0xa6, 0xad, 0x7f, 0x53, 0x92, 0x36,
-	0x2a, 0x50, 0x4a, 0xeb, 0x88, 0xf4, 0xc6, 0x01, 0xa9, 0xc1, 0x42, 0xaa, 0x44, 0x51, 0xe5, 0x0a,
-	0x09, 0x55, 0x42, 0x95, 0xeb, 0xdd, 0x38, 0x46, 0x89, 0x37, 0xb2, 0x1d, 0x54, 0x4e, 0x5c, 0x39,
-	0xf2, 0x08, 0x7d, 0x07, 0x5e, 0xa2, 0x17, 0xa4, 0x72, 0xe3, 0x54, 0x50, 0x7a, 0xe1, 0x31, 0xd0,
-	0xae, 0xed, 0x6d, 0xec, 0xc4, 0x6d, 0xb8, 0x70, 0xe0, 0xb6, 0xbb, 0xf3, 0xed, 0x7c, 0xf3, 0xcd,
-	0xce, 0x8c, 0x0d, 0xf3, 0x18, 0x9b, 0x0d, 0x63, 0xe0, 0x77, 0x1a, 0xfe, 0xa9, 0xda, 0x77, 0xa9,
-	0x4f, 0x11, 0x3a, 0xb1, 0x0d, 0xe7, 0xad, 0x4d, 0x0c, 0x5b, 0xc5, 0xd8, 0x54, 0x99, 0x51, 0xa9,
-	0x58, 0xd4, 0xa2, 0xdc, 0xdc, 0x60, 0xab, 0x00, 0xa9, 0x94, 0xd8, 0x65, 0x86, 0xe1, 0xdb, 0xfa,
-	0xb9, 0x04, 0xa5, 0x7d, 0xcf, 0xda, 0xc5, 0x78, 0xd7, 0x34, 0xe9, 0xc0, 0xf1, 0x91, 0x0c, 0xff,
-	0x18, 0x18, 0xbb, 0xc4, 0xf3, 0x64, 0x69, 0x55, 0xda, 0x98, 0xd5, 0xa3, 0x2d, 0x9a, 0x83, 0x1c,
-	0xb6, 0xb1, 0x9c, 0xe5, 0xa7, 0x6c, 0x89, 0x10, 0xe4, 0x1d, 0xa3, 0x47, 0xe4, 0x1c, 0x3f, 0xe2,
-	0x6b, 0xf4, 0x00, 0xf2, 0x2e, 0xed, 0x12, 0x39, 0xbf, 0x2a, 0x6d, 0x94, 0x9b, 0x0b, 0x6a, 0x3c,
-	0x32, 0x9d, 0x76, 0x89, 0xce, 0x01, 0x68, 0x0b, 0xa0, 0x4b, 0x0c, 0x4c, 0xdc, 0x63, 0xe6, 0x75,
-	0x86, 0xb9, 0x68, 0x95, 0x86, 0x97, 0xb5, 0xd9, 0x17, 0xfc, 0x54, 0xdb, 0xd3, 0xf4, 0xd9, 0x00,
-	0xa0, 0xd9, 0x18, 0x2d, 0x41, 0xc1, 0x23, 0x0e, 0x26, 0xae, 0x5c, 0xe0, 0x64, 0xe1, 0xee, 0x49,
-	0xf1, 0xe3, 0x59, 0x2d, 0xf3, 0xf3, 0xac, 0x96, 0xa9, 0x2f, 0xc3, 0x62, 0x4c, 0x89, 0x4e, 0xbc,
-	0x3e, 0x75, 0x3c, 0x52, 0xff, 0x22, 0x01, 0x0a, 0x2c, 0x2d, 0xc3, 0x37, 0x3b, 0x13, 0x85, 0xe6,
-	0x26, 0x0a, 0xcd, 0x8d, 0x0b, 0xcd, 0x4d, 0x10, 0x9a, 0xfb, 0xb3, 0x42, 0x57, 0x40, 0x19, 0x97,
-	0x23, 0xd4, 0x7e, 0x96, 0x78, 0x1e, 0x5e, 0xf5, 0xb1, 0xe1, 0x93, 0xd0, 0x78, 0xe8, 0x1b, 0x3e,
-	0xb9, 0xe1, 0x65, 0x37, 0x61, 0xc6, 0x63, 0x10, 0xfe, 0xb6, 0xe5, 0x66, 0x25, 0xa1, 0x85, 0x5f,
-	0xd7, 0x03, 0x08, 0x6a, 0xc2, 0xa2, 0xd9, 0x31, 0x1c, 0x8b, 0x1c, 0xf7, 0xbb, 0x86, 0xdf, 0xa6,
-	0x6e, 0xef, 0x38, 0xb8, 0xcb, 0x8a, 0xa0, 0xa8, 0x2f, 0x04, 0xc6, 0x83, 0xd0, 0x16, 0x30, 0x5f,
-	0x6b, 0xca, 0xa7, 0x68, 0xaa, 0xc1, 0xdd, 0x89, 0x41, 0x0b, 0x59, 0x2f, 0x61, 0x6e, 0xdf, 0xb3,
-	0x34, 0xd2, 0x25, 0x02, 0x70, 0x83, 0xa0, 0x6b, 0xc2, 0x6c, 0x0a, 0xa1, 0x02, 0x72, 0xd2, 0x9f,
-	0xe0, 0xfa, 0x2e, 0x41, 0x39, 0xc8, 0xf0, 0xf3, 0x81, 0x63, 0xfa, 0x36, 0x75, 0xc4, 0x63, 0x4b,
-	0xb7, 0x55, 0xf5, 0x0e, 0x14, 0x79, 0x67, 0x99, 0xb4, 0x1b, 0x66, 0x73, 0x39, 0x01, 0x3e, 0x08,
-	0xcd, 0xba, 0x00, 0xa2, 0x0a, 0xcc, 0x60, 0xe2, 0xd0, 0x5e, 0xd8, 0x48, 0xc1, 0x86, 0xb9, 0x6a,
-	0x87, 0xfc, 0x61, 0x37, 0x25, 0x5d, 0x45, 0xe1, 0xe9, 0x02, 0x88, 0x14, 0x28, 0xd2, 0x3e, 0x71,
-	0x0d, 0x9f, 0xba, 0x41, 0xa9, 0xe9, 0x62, 0x3f, 0xa2, 0x5e, 0x86, 0xa5, 0xb8, 0x40, 0xa1, 0x7d,
-	0x28, 0xc1, 0xbc, 0x48, 0xcc, 0xdf, 0x2a, 0xff, 0x0e, 0xfc, 0x3f, 0xa6, 0x51, 0x64, 0xe0, 0x03,
-	0x2c, 0xb3, 0xdc, 0xf4, 0xfb, 0x2e, 0x7d, 0x47, 0x9e, 0xb9, 0xd4, 0xf3, 0xa2, 0x62, 0x66, 0x63,
-	0xa0, 0xed, 0xd2, 0x5e, 0x58, 0x6d, 0x7c, 0x8d, 0xca, 0x90, 0xf5, 0x69, 0x58, 0x66, 0x59, 0x9f,
-	0xb2, 0x08, 0x8c, 0xe0, 0x2e, 0x0e, 0x5b, 0x42, 0xec, 0x63, 0xd1, 0xe5, 0x53, 0xa3, 0x5b, 0x83,
-	0x5a, 0x4a, 0x00, 0x22, 0xc6, 0xd7, 0x7c, 0xa2, 0x1d, 0xbe, 0x77, 0xcc, 0xc8, 0xa4, 0xed, 0x69,
-	0x68, 0x05, 0xf2, 0xd8, 0xc6, 0xe1, 0x38, 0x6b, 0x15, 0x87, 0x97, 0xb5, 0xbc, 0xb6, 0xa7, 0x79,
-	0x3a, 0x3f, 0x8d, 0x91, 0x67, 0x53, 0xc9, 0x83, 0xe1, 0x92, 0xf0, 0x1c, 0xf1, 0x36, 0xbf, 0x16,
-	0x20, 0xb7, 0xef, 0x59, 0xe8, 0x08, 0x60, 0xe4, 0x93, 0xb1, 0xa6, 0x8e, 0x7f, 0x7e, 0xd4, 0xd8,
-	0x2c, 0x56, 0x1e, 0xde, 0x0a, 0x89, 0x38, 0x90, 0x0d, 0xff, 0x25, 0x47, 0xf5, 0xfd, 0xf4, 0xdb,
-	0xa3, 0x38, 0x45, 0x9d, 0x0e, 0x27, 0xa8, 0x5c, 0x40, 0x13, 0xe6, 0x64, 0x5a, 0xac, 0xe3, 0x50,
-	0xe5, 0xf1, 0xd4, 0x50, 0xc1, 0x69, 0x42, 0x29, 0x3e, 0xc5, 0xd6, 0x53, 0x7c, 0xc4, 0x50, 0xca,
-	0xd6, 0x34, 0x28, 0x41, 0xf2, 0x06, 0xfe, 0x1d, 0x9d, 0x5e, 0xf5, 0xf4, 0xbc, 0x44, 0x18, 0x65,
-	0xf3, 0x76, 0x8c, 0x70, 0xdf, 0x86, 0x72, 0x62, 0x40, 0xdc, 0xbb, 0x31, 0x3c, 0x41, 0xb2, 0x3d,
-	0x15, 0x4c, 0xf0, 0x9c, 0x42, 0x65, 0x62, 0x1f, 0x3e, 0x4a, 0x8b, 0x75, 0x02, 0x58, 0xd9, 0xf9,
-	0x0d, 0xf0, 0x68, 0x11, 0x26, 0xbb, 0x2b, 0xad, 0x08, 0x13, 0xb8, 0xd4, 0x22, 0x4c, 0xe9, 0xa9,
-	0xd6, 0xd3, 0xf3, 0x61, 0x55, 0xba, 0x18, 0x56, 0xa5, 0x1f, 0xc3, 0xaa, 0xf4, 0xe9, 0xaa, 0x9a,
-	0xb9, 0xb8, 0xaa, 0x66, 0xbe, 0x5d, 0x55, 0x33, 0x47, 0xeb, 0x96, 0xed, 0x77, 0x06, 0x27, 0xaa,
-	0x49, 0x7b, 0x0d, 0xe1, 0x93, 0xfd, 0xbc, 0x6d, 0x5b, 0xb4, 0x11, 0xfd, 0x04, 0x9e, 0x14, 0xf8,
-	0x1c, 0xdd, 0xf9, 0x15, 0x00, 0x00, 0xff, 0xff, 0x9a, 0x51, 0xca, 0x79, 0x17, 0x0a, 0x00, 0x00,
+	// 833 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xdc, 0x56, 0x4d, 0x4f, 0xdb, 0x4c,
+	0x10, 0x8e, 0x93, 0x00, 0x61, 0xde, 0x37, 0x01, 0x96, 0x00, 0xc6, 0x2f, 0x6f, 0x02, 0xe9, 0x17,
+	0x9f, 0x8e, 0x1a, 0x6e, 0xbd, 0x11, 0xac, 0x4a, 0x48, 0xa5, 0x42, 0xa6, 0x95, 0x2a, 0xa4, 0x8a,
+	0x1a, 0xef, 0xc6, 0x71, 0x95, 0x78, 0x23, 0xdb, 0xa9, 0xe8, 0xa9, 0x52, 0x4f, 0x3d, 0xf6, 0x27,
+	0xf0, 0x1f, 0xf8, 0x13, 0x5c, 0x2a, 0x71, 0xec, 0x89, 0x56, 0xe1, 0xd2, 0x9f, 0x51, 0x79, 0x6d,
+	0x2f, 0xb1, 0x13, 0x43, 0x2a, 0x55, 0x3d, 0xf4, 0x14, 0xef, 0xce, 0xb3, 0xf3, 0xcc, 0x33, 0x3b,
+	0x33, 0x1b, 0x98, 0xc1, 0x58, 0xaf, 0x6a, 0x5d, 0xb7, 0x59, 0x75, 0x4f, 0xe5, 0x8e, 0x4d, 0x5d,
+	0x8a, 0xd0, 0x89, 0xa9, 0x59, 0x6f, 0x4d, 0xa2, 0x99, 0x32, 0xc6, 0xba, 0xec, 0x19, 0xa5, 0xa2,
+	0x41, 0x0d, 0xca, 0xcc, 0x55, 0xef, 0xcb, 0x47, 0x4a, 0x79, 0xef, 0xb0, 0x87, 0x61, 0xcb, 0xca,
+	0x85, 0x00, 0xf9, 0x7d, 0xc7, 0xd8, 0xc1, 0x78, 0x47, 0xd7, 0x69, 0xd7, 0x72, 0x91, 0x08, 0x13,
+	0x1a, 0xc6, 0x36, 0x71, 0x1c, 0x51, 0x58, 0x16, 0x56, 0x27, 0xd5, 0x70, 0x89, 0xa6, 0x21, 0x83,
+	0x4d, 0x2c, 0xa6, 0xd9, 0xae, 0xf7, 0x89, 0x10, 0x64, 0x2d, 0xad, 0x4d, 0xc4, 0x0c, 0xdb, 0x62,
+	0xdf, 0xe8, 0x11, 0x64, 0x6d, 0xda, 0x22, 0x62, 0x76, 0x59, 0x58, 0x2d, 0xd4, 0x66, 0xe5, 0x68,
+	0x64, 0x2a, 0x6d, 0x11, 0x95, 0x01, 0xd0, 0x26, 0x40, 0x8b, 0x68, 0x98, 0xd8, 0xc7, 0x9e, 0xd7,
+	0x31, 0xcf, 0x45, 0x3d, 0xdf, 0xbb, 0x2a, 0x4f, 0x3e, 0x63, 0xbb, 0xca, 0x9e, 0xa2, 0x4e, 0xfa,
+	0x00, 0xc5, 0xc4, 0x68, 0x1e, 0xc6, 0x1d, 0x62, 0x61, 0x62, 0x8b, 0xe3, 0x8c, 0x2c, 0x58, 0x3d,
+	0xc9, 0x7d, 0x3a, 0x2b, 0xa7, 0x7e, 0x9c, 0x95, 0x53, 0x95, 0x05, 0x98, 0x8b, 0x28, 0x51, 0x89,
+	0xd3, 0xa1, 0x96, 0x43, 0x2a, 0x5f, 0x04, 0x40, 0xbe, 0xa5, 0xae, 0xb9, 0x7a, 0x73, 0xa8, 0xd0,
+	0xcc, 0x50, 0xa1, 0x99, 0x41, 0xa1, 0x99, 0x21, 0x42, 0x33, 0x7f, 0x56, 0xe8, 0x12, 0x48, 0x83,
+	0x72, 0xb8, 0xda, 0x73, 0x81, 0xe5, 0xe1, 0x65, 0x07, 0x6b, 0x2e, 0x09, 0x8c, 0x87, 0xae, 0xe6,
+	0x92, 0x5b, 0x6e, 0x76, 0x1d, 0xc6, 0x1c, 0x0f, 0xc2, 0xee, 0xb6, 0x50, 0x2b, 0xc6, 0xb4, 0xb0,
+	0xe3, 0xaa, 0x0f, 0x41, 0x35, 0x98, 0xd3, 0x9b, 0x9a, 0x65, 0x90, 0xe3, 0x4e, 0x4b, 0x73, 0x1b,
+	0xd4, 0x6e, 0x1f, 0xfb, 0x67, 0xbd, 0x22, 0xc8, 0xa9, 0xb3, 0xbe, 0xf1, 0x20, 0xb0, 0xf9, 0xcc,
+	0x37, 0x9a, 0xb2, 0x09, 0x9a, 0xca, 0xf0, 0xff, 0xd0, 0xa0, 0xb9, 0xac, 0xe7, 0x30, 0xbd, 0xef,
+	0x18, 0x0a, 0x69, 0x11, 0x0e, 0xb8, 0x45, 0xd0, 0x0d, 0x61, 0x3a, 0x81, 0x50, 0x02, 0x31, 0xee,
+	0x8f, 0x73, 0x7d, 0x13, 0xa0, 0xe0, 0x67, 0xf8, 0x69, 0xd7, 0xd2, 0x5d, 0x93, 0x5a, 0xfc, 0xb2,
+	0x85, 0xbb, 0xaa, 0x7a, 0x1b, 0x72, 0xac, 0xb3, 0x74, 0xda, 0x0a, 0xb2, 0xb9, 0x10, 0x03, 0x1f,
+	0x04, 0x66, 0x95, 0x03, 0x51, 0x11, 0xc6, 0x30, 0xb1, 0x68, 0x3b, 0x68, 0x24, 0x7f, 0xe1, 0xb9,
+	0x6a, 0x04, 0xfc, 0x41, 0x37, 0xc5, 0x5d, 0x85, 0xe1, 0xa9, 0x1c, 0x88, 0x24, 0xc8, 0xd1, 0x0e,
+	0xb1, 0x35, 0x97, 0xda, 0x7e, 0xa9, 0xa9, 0x7c, 0xdd, 0xa7, 0x5e, 0x84, 0xf9, 0xa8, 0x40, 0xae,
+	0xbd, 0x27, 0xc0, 0x0c, 0x4f, 0xcc, 0xdf, 0x2a, 0xff, 0x3f, 0x58, 0x1c, 0xd0, 0xc8, 0x33, 0xf0,
+	0x01, 0x16, 0xbc, 0xdc, 0x74, 0x3a, 0x36, 0x7d, 0x47, 0x76, 0x6d, 0xea, 0x38, 0x61, 0x31, 0x7b,
+	0x63, 0xa0, 0x61, 0xd3, 0x76, 0x50, 0x6d, 0xec, 0x1b, 0x15, 0x20, 0xed, 0xd2, 0xa0, 0xcc, 0xd2,
+	0x2e, 0xf5, 0x22, 0xd0, 0xfc, 0xb3, 0x38, 0x68, 0x09, 0xbe, 0x8e, 0x44, 0x97, 0x4d, 0x8c, 0x6e,
+	0x05, 0xca, 0x09, 0x01, 0xf0, 0x18, 0x5f, 0xb1, 0x89, 0x76, 0xf8, 0xde, 0xd2, 0x43, 0x93, 0xb2,
+	0xa7, 0xa0, 0x25, 0xc8, 0x62, 0x13, 0x07, 0xe3, 0xac, 0x9e, 0xeb, 0x5d, 0x95, 0xb3, 0xca, 0x9e,
+	0xe2, 0xa8, 0x6c, 0x37, 0x42, 0x9e, 0x4e, 0x24, 0xf7, 0x87, 0x4b, 0xcc, 0x33, 0xe7, 0xfd, 0x28,
+	0xc0, 0x14, 0xeb, 0x53, 0xc3, 0xd6, 0x30, 0x79, 0x41, 0x15, 0x65, 0xf7, 0x77, 0x5e, 0xf9, 0x68,
+	0xb7, 0xb7, 0xc8, 0x2e, 0xa8, 0x3f, 0x86, 0x30, 0xbe, 0xda, 0xf9, 0x04, 0x64, 0xf6, 0x1d, 0x03,
+	0x1d, 0x01, 0xf4, 0x3d, 0x69, 0x2b, 0xf2, 0xe0, 0xf3, 0x28, 0x47, 0xde, 0x0a, 0x69, 0xed, 0x4e,
+	0x48, 0xc8, 0x81, 0x4c, 0x98, 0x8a, 0x3f, 0x25, 0x0f, 0x93, 0x4f, 0xf7, 0xe3, 0x24, 0x79, 0x34,
+	0x1c, 0xa7, 0xb2, 0x01, 0x0d, 0x99, 0xe3, 0x49, 0xb1, 0x0e, 0x42, 0xa5, 0xc7, 0x23, 0x43, 0x39,
+	0xa7, 0x0e, 0xf9, 0xe8, 0x94, 0xbd, 0x9f, 0xe0, 0x23, 0x82, 0x92, 0x36, 0x47, 0x41, 0x71, 0x92,
+	0xd7, 0xf0, 0x4f, 0xff, 0x74, 0xad, 0x24, 0xe7, 0x25, 0xc4, 0x48, 0xeb, 0x77, 0x63, 0xb8, 0xfb,
+	0x06, 0x14, 0x62, 0x03, 0xec, 0xc1, 0xad, 0xe1, 0x71, 0x92, 0xad, 0x91, 0x60, 0x9c, 0xe7, 0x14,
+	0x8a, 0x43, 0xe7, 0xc4, 0x46, 0x52, 0xac, 0x43, 0xc0, 0xd2, 0xf6, 0x2f, 0x80, 0xfb, 0x8b, 0x30,
+	0xde, 0xfd, 0x49, 0x45, 0x18, 0xc3, 0x25, 0x16, 0x61, 0x42, 0xcf, 0xa3, 0x37, 0xf0, 0x6f, 0xa4,
+	0xdf, 0xef, 0x25, 0xd6, 0xd4, 0x0d, 0x48, 0xda, 0x18, 0x01, 0x14, 0x32, 0xd4, 0x77, 0x2f, 0x7a,
+	0x25, 0xe1, 0xb2, 0x57, 0x12, 0xbe, 0xf7, 0x4a, 0xc2, 0xe7, 0xeb, 0x52, 0xea, 0xf2, 0xba, 0x94,
+	0xfa, 0x7a, 0x5d, 0x4a, 0x1d, 0xad, 0x19, 0xa6, 0xdb, 0xec, 0x9e, 0xc8, 0x3a, 0x6d, 0x57, 0xb9,
+	0x43, 0xef, 0xef, 0xeb, 0x96, 0x41, 0xbd, 0x9f, 0xaa, 0x4e, 0x6d, 0xc2, 0xfe, 0x0b, 0x9f, 0x8c,
+	0xb3, 0xd9, 0xb2, 0xfd, 0x33, 0x00, 0x00, 0xff, 0xff, 0x1e, 0x6d, 0x43, 0x20, 0x1e, 0x0b, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -757,6 +840,8 @@ type MsgClient interface {
 	ApproveCrossPlatform(ctx context.Context, in *MsgApproveCrossPlatform, opts ...grpc.CallOption) (*MsgApproveCrossPlatformResponse, error)
 	// SyncPlatformDID defines a method for syncing did to a new platform
 	SyncPlatformDID(ctx context.Context, in *MsgSyncPlatformDID, opts ...grpc.CallOption) (*MsgSyncPlatformDIDResponse, error)
+	// UpgradeToDDC defines a method for upgrade denom to ddc contract
+	UpgradeToDDC(ctx context.Context, in *MsgUpgradeToDDC, opts ...grpc.CallOption) (*MsgUpgradeToDDCResponse, error)
 }
 
 type msgClient struct {
@@ -839,6 +924,15 @@ func (c *msgClient) SyncPlatformDID(ctx context.Context, in *MsgSyncPlatformDID,
 	return out, nil
 }
 
+func (c *msgClient) UpgradeToDDC(ctx context.Context, in *MsgUpgradeToDDC, opts ...grpc.CallOption) (*MsgUpgradeToDDCResponse, error) {
+	out := new(MsgUpgradeToDDCResponse)
+	err := c.cc.Invoke(ctx, "/bianjieai.ddc.auth.Msg/UpgradeToDDC", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
 	// AddAccount defines a method for creating a account.
@@ -857,6 +951,8 @@ type MsgServer interface {
 	ApproveCrossPlatform(context.Context, *MsgApproveCrossPlatform) (*MsgApproveCrossPlatformResponse, error)
 	// SyncPlatformDID defines a method for syncing did to a new platform
 	SyncPlatformDID(context.Context, *MsgSyncPlatformDID) (*MsgSyncPlatformDIDResponse, error)
+	// UpgradeToDDC defines a method for upgrade denom to ddc contract
+	UpgradeToDDC(context.Context, *MsgUpgradeToDDC) (*MsgUpgradeToDDCResponse, error)
 }
 
 // UnimplementedMsgServer can be embedded to have forward compatible implementations.
@@ -886,6 +982,9 @@ func (*UnimplementedMsgServer) ApproveCrossPlatform(ctx context.Context, req *Ms
 }
 func (*UnimplementedMsgServer) SyncPlatformDID(ctx context.Context, req *MsgSyncPlatformDID) (*MsgSyncPlatformDIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SyncPlatformDID not implemented")
+}
+func (*UnimplementedMsgServer) UpgradeToDDC(ctx context.Context, req *MsgUpgradeToDDC) (*MsgUpgradeToDDCResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpgradeToDDC not implemented")
 }
 
 func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
@@ -1036,6 +1135,24 @@ func _Msg_SyncPlatformDID_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_UpgradeToDDC_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpgradeToDDC)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).UpgradeToDDC(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/bianjieai.ddc.auth.Msg/UpgradeToDDC",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).UpgradeToDDC(ctx, req.(*MsgUpgradeToDDC))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Msg_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "bianjieai.ddc.auth.Msg",
 	HandlerType: (*MsgServer)(nil),
@@ -1071,6 +1188,10 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SyncPlatformDID",
 			Handler:    _Msg_SyncPlatformDID_Handler,
+		},
+		{
+			MethodName: "UpgradeToDDC",
+			Handler:    _Msg_UpgradeToDDC_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -1692,6 +1813,71 @@ func (m *MsgSyncPlatformDIDResponse) MarshalToSizedBuffer(dAtA []byte) (int, err
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgUpgradeToDDC) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpgradeToDDC) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpgradeToDDC) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Operator) > 0 {
+		i -= len(m.Operator)
+		copy(dAtA[i:], m.Operator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Operator)))
+		i--
+		dAtA[i] = 0x2a
+	}
+	if len(m.Denom) > 0 {
+		i -= len(m.Denom)
+		copy(dAtA[i:], m.Denom)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Denom)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.Protocol != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Protocol))
+		i--
+		dAtA[i] = 0x10
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpgradeToDDCResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpgradeToDDCResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpgradeToDDCResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -1984,6 +2170,35 @@ func (m *MsgSyncPlatformDIDResponse) Size() (n int) {
 	return n
 }
 
+func (m *MsgUpgradeToDDC) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Protocol != 0 {
+		n += 1 + sovTx(uint64(m.Protocol))
+	}
+	l = len(m.Denom)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Operator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgUpgradeToDDCResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
 func sovTx(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
@@ -2129,7 +2344,7 @@ func (m *MsgAddAccount) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Role |= ddc.Role(b&0x7F) << shift
+				m.Role |= core.Role(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -2396,7 +2611,7 @@ func (m *MsgAddBatchAccount) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 4:
 			if wireType == 0 {
-				var v ddc.Role
+				var v core.Role
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return ErrIntOverflowTx
@@ -2406,7 +2621,7 @@ func (m *MsgAddBatchAccount) Unmarshal(dAtA []byte) error {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					v |= ddc.Role(b&0x7F) << shift
+					v |= core.Role(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -2440,10 +2655,10 @@ func (m *MsgAddBatchAccount) Unmarshal(dAtA []byte) error {
 				}
 				var elementCount int
 				if elementCount != 0 && len(m.Role) == 0 {
-					m.Role = make([]ddc.Role, 0, elementCount)
+					m.Role = make([]core.Role, 0, elementCount)
 				}
 				for iNdEx < postIndex {
-					var v ddc.Role
+					var v core.Role
 					for shift := uint(0); ; shift += 7 {
 						if shift >= 64 {
 							return ErrIntOverflowTx
@@ -2453,7 +2668,7 @@ func (m *MsgAddBatchAccount) Unmarshal(dAtA []byte) error {
 						}
 						b := dAtA[iNdEx]
 						iNdEx++
-						v |= ddc.Role(b&0x7F) << shift
+						v |= core.Role(b&0x7F) << shift
 						if b < 0x80 {
 							break
 						}
@@ -2673,7 +2888,7 @@ func (m *MsgUpdateAccountState) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.State |= ddc.State(b&0x7F) << shift
+				m.State |= core.State(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3008,7 +3223,7 @@ func (m *MsgAddFunction) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Role |= ddc.Role(b&0x7F) << shift
+				m.Role |= core.Role(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3027,7 +3242,7 @@ func (m *MsgAddFunction) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Protocol |= ddc.Protocol(b&0x7F) << shift
+				m.Protocol |= core.Protocol(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3078,7 +3293,7 @@ func (m *MsgAddFunction) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Function |= ddc.Function(b&0x7F) << shift
+				m.Function |= core.Function(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3229,7 +3444,7 @@ func (m *MsgDeleteFunction) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Role |= ddc.Role(b&0x7F) << shift
+				m.Role |= core.Role(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3248,7 +3463,7 @@ func (m *MsgDeleteFunction) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Protocol |= ddc.Protocol(b&0x7F) << shift
+				m.Protocol |= core.Protocol(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3299,7 +3514,7 @@ func (m *MsgDeleteFunction) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Function |= ddc.Function(b&0x7F) << shift
+				m.Function |= core.Function(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
@@ -3764,6 +3979,189 @@ func (m *MsgSyncPlatformDIDResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgSyncPlatformDIDResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpgradeToDDC) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpgradeToDDC: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpgradeToDDC: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Protocol", wireType)
+			}
+			m.Protocol = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Protocol |= core.Protocol(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Denom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Operator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Operator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpgradeToDDCResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpgradeToDDCResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpgradeToDDCResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

@@ -13,7 +13,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/bianjieai/ddc-go/ddc"
+	"github.com/bianjieai/ddc-go/ddc/core"
 	"github.com/golang/protobuf/descriptor"
 	"github.com/golang/protobuf/proto"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -51,13 +51,13 @@ func request_Query_ApprovedForAll_0(ctx context.Context, marshaler runtime.Marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "protocol")
 	}
 
-	e, err = runtime.Enum(val, ddc.Protocol_value)
+	e, err = runtime.Enum(val, core.Protocol_value)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "protocol", err)
 	}
 
-	protoReq.Protocol = ddc.Protocol(e)
+	protoReq.Protocol = core.Protocol(e)
 
 	val, ok = pathParams["denom"]
 	if !ok {
@@ -103,13 +103,13 @@ func local_request_Query_ApprovedForAll_0(ctx context.Context, marshaler runtime
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "protocol")
 	}
 
-	e, err = runtime.Enum(val, ddc.Protocol_value)
+	e, err = runtime.Enum(val, core.Protocol_value)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "protocol", err)
 	}
 
-	protoReq.Protocol = ddc.Protocol(e)
+	protoReq.Protocol = core.Protocol(e)
 
 	val, ok = pathParams["denom"]
 	if !ok {
