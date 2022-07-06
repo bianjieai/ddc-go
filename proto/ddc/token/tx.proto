@@ -1,10 +1,10 @@
 syntax = "proto3";
-package bianjieai.ddc.fee;
+package bianjieai.ddc.token;
 
 import "gogoproto/gogo.proto";
 import "ddc/ddc.proto";
 
-option go_package = "github.com/bianjieai/ddc-go/ddc/fee";
+option go_package = "github.com/bianjieai/ddc-go/ddc/token";
 // Msg defines the node Msg service.
 service Msg {
     // Approve defines a method for approving a denom.
@@ -26,7 +26,7 @@ message MsgApprove {
     option (gogoproto.equal)           = false;
     option (gogoproto.goproto_getters) = false;
 
-    string denom         		= 1;
+    string denom                = 1;
     string token_id         	= 2 [(gogoproto.customname) = "tokenID"];
     string operator			    = 3;
     string to                   = 4;
@@ -37,7 +37,7 @@ message MsgApproveResponse {
 }
 
 // MsgApproveForAll defines the Msg/ApproveForAll request type.
-message MsgApprove {
+message MsgApproveForAll {
     option (gogoproto.equal)           = false;
     option (gogoproto.goproto_getters) = false;
 

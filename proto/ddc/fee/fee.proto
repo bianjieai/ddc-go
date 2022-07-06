@@ -2,6 +2,7 @@ syntax = "proto3";
 package bianjieai.ddc.fee;
 
 import "gogoproto/gogo.proto";
+import "ddc/ddc.proto";
 
 option go_package = "github.com/bianjieai/ddc-go/ddc/fee";
 option (gogoproto.goproto_getters_all) = false;
@@ -10,8 +11,8 @@ message FeeRule {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  Method method         	  = 1;
-  uint64 fee                  = 2;
+  Function function         	  = 1;
+  uint64   fee                  = 2;
 }
 
 message Balance {

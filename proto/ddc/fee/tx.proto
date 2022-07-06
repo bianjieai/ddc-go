@@ -61,7 +61,7 @@ message MsgSettlement {
 }
 
 // MsgSettlementResponse defines the Msg/Settlement response type.
-message MsgRechargeResponse {
+message MsgSettlementResponse {
 }
 
 // MsgSetFeeRule defines the Msg/SetFeeRule request type.
