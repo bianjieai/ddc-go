@@ -24,3 +24,8 @@ func (k Keeper) prefixStore(ctx sdk.Context) prefix.Store {
 	store := ctx.KVStore(k.storeKey)
 	return prefix.NewStore(store, []byte(SubModule))
 }
+
+func (k Keeper) ControlByDDC(ctx sdk.Context, denomID string) bool {
+	store := k.prefixStore(ctx)
+	return store.Has(ddcKey(denomID))
+}

@@ -11,3 +11,11 @@ var (
 const (
 	SubModule = "auth"
 )
+
+// ddcKey returns the byte representation of the ddc
+func ddcKey(denomID string) []byte {
+	key := make([]byte, len(DDCKey)+len(denomID))
+	copy(key, DDCKey)
+	copy(key[len(DDCKey):], denomID)
+	return key
+}

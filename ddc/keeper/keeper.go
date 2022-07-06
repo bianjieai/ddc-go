@@ -30,6 +30,10 @@ func NewKeeper(cdc codec.Codec, key sdk.StoreKey) Keeper {
 
 // BeforeDenomTransfer implements export.Hook
 func (k Keeper) BeforeDenomTransfer(ctx sdk.Context, protocol string, denomID string, sender sdk.AccAddress) error {
+	if !k.AuthKeeper.ControlByDDC(ctx, denomID) {
+		return nil
+	}
+
 	if err := k.AuthKeeper.BeforeDenomTransfer(ctx, protocol, denomID, sender); err != nil {
 		return err
 	}
@@ -46,6 +50,10 @@ func (k Keeper) BeforeDenomTransfer(ctx sdk.Context, protocol string, denomID st
 
 // BeforeTokenBurn implements export.Hook
 func (k Keeper) BeforeTokenBurn(ctx sdk.Context, protocol string, denomID string, tokenID string, sender sdk.AccAddress) error {
+	if !k.AuthKeeper.ControlByDDC(ctx, denomID) {
+		return nil
+	}
+
 	if err := k.AuthKeeper.BeforeTokenBurn(ctx, protocol, denomID, tokenID, sender); err != nil {
 		return err
 	}
@@ -62,6 +70,10 @@ func (k Keeper) BeforeTokenBurn(ctx sdk.Context, protocol string, denomID string
 
 // BeforeTokenEdit implements export.Hook
 func (k Keeper) BeforeTokenEdit(ctx sdk.Context, protocol string, denomID string, tokenID string, sender sdk.AccAddress) error {
+	if !k.AuthKeeper.ControlByDDC(ctx, denomID) {
+		return nil
+	}
+
 	if err := k.AuthKeeper.BeforeTokenEdit(ctx, protocol, denomID, tokenID, sender); err != nil {
 		return err
 	}
@@ -78,6 +90,10 @@ func (k Keeper) BeforeTokenEdit(ctx sdk.Context, protocol string, denomID string
 
 // BeforeTokenMint implements export.Hook
 func (k Keeper) BeforeTokenMint(ctx sdk.Context, protocol string, denomID string, sender sdk.AccAddress, receiver sdk.AccAddress) error {
+	if !k.AuthKeeper.ControlByDDC(ctx, denomID) {
+		return nil
+	}
+
 	if err := k.AuthKeeper.BeforeTokenMint(ctx, protocol, denomID, sender, receiver); err != nil {
 		return err
 	}
@@ -94,6 +110,10 @@ func (k Keeper) BeforeTokenMint(ctx sdk.Context, protocol string, denomID string
 
 // BeforeTokenTransfer implements export.Hook
 func (k Keeper) BeforeTokenTransfer(ctx sdk.Context, protocol string, denomID string, tokenID string, sender sdk.AccAddress, receiver sdk.AccAddress) error {
+	if !k.AuthKeeper.ControlByDDC(ctx, denomID) {
+		return nil
+	}
+
 	if err := k.AuthKeeper.BeforeTokenTransfer(ctx, protocol, denomID, tokenID, sender, receiver); err != nil {
 		return err
 	}
