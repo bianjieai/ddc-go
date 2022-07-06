@@ -44,8 +44,8 @@ message QueryTokenApprovedRequest {
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
-  string   denom         		= 1;
-  string   token_id             = 2;
+  string denom         		= 1;
+  string token_id         = 2 [(gogoproto.customname) = "tokenID"];
 }
 
 // QueryTokenApprovedResponse is the request type for the Query/TokenApproved RPC method.

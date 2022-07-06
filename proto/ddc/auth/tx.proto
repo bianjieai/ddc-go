@@ -34,7 +34,7 @@ message MsgAddAccount {
     string did         	  = 2;
     string name        	  = 3;
     Role   role			  = 4;
-    string leader_did 	  = 5;
+    string leader_did     = 5 [(gogoproto.customname) = "leaderDID"];
     string sender         = 6;
 }
 
@@ -51,7 +51,7 @@ message MsgAddBatchAccount {
     repeated string did           = 2;
     repeated string name          = 3;
     repeated Role   role		  = 4;
-    repeated string leader_did 	  = 5;
+    string leader_did             = 5 [(gogoproto.customname) = "leaderDID"];
     string sender                 = 6;
 }
 
@@ -139,7 +139,7 @@ message MsgSyncPlatformDID {
     option (gogoproto.equal)           = false;
     option (gogoproto.goproto_getters) = false;
 
-    repeated string dids        = 1;
+    repeated string dids        = 1  [(gogoproto.customname) = "DIDs"];
     string operator             = 2;
 }
 
