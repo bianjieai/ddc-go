@@ -4,19 +4,22 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 // Keeper of the auth store
 type Keeper struct {
-	cdc      codec.Codec
-	storeKey sdk.StoreKey
+	cdc        codec.Codec
+	storeKey   sdk.StoreKey
+	paramSpace paramstypes.Subspace
 }
 
 // NewKeeper creates a new nft Keeper instance
-func NewKeeper(cdc codec.Codec, key sdk.StoreKey) Keeper {
+func NewKeeper(cdc codec.Codec, key sdk.StoreKey, paramSpace paramstypes.Subspace) Keeper {
 	return Keeper{
-		cdc:      cdc,
-		storeKey: key,
+		cdc:        cdc,
+		storeKey:   key,
+		paramSpace: paramSpace,
 	}
 }
 

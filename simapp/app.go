@@ -268,7 +268,7 @@ func NewSimApp(
 
 	app.NFTKeeper = nftkeeper.NewKeeper(appCodec, keys[nfttypes.StoreKey])
 	app.MTKeeper = mtkeeper.NewKeeper(appCodec, keys[mttypes.StoreKey])
-	app.DDCKeeper = ddckeeper.NewKeeper(appCodec, keys[ddc.StoreKey])
+	app.DDCKeeper = ddckeeper.NewKeeper(appCodec, keys[ddc.StoreKey], app.GetSubspace(ddc.ModuleName))
 
 	/****  Module Options ****/
 
@@ -545,6 +545,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(distrtypes.ModuleName)
 	paramsKeeper.Subspace(slashingtypes.ModuleName)
 	paramsKeeper.Subspace(crisistypes.ModuleName)
+	paramsKeeper.Subspace(ddc.ModuleName)
 
 	return paramsKeeper
 }
