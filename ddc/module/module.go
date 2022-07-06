@@ -1,7 +1,9 @@
 package module
 
 import (
+	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/gorilla/mux"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
@@ -18,6 +20,10 @@ import (
 
 	"github.com/bianjieai/ddc-go/ddc"
 	"github.com/bianjieai/ddc-go/ddc/client/cli"
+	"github.com/bianjieai/ddc-go/ddc/core"
+	"github.com/bianjieai/ddc-go/ddc/core/auth"
+	"github.com/bianjieai/ddc-go/ddc/core/fee"
+	"github.com/bianjieai/ddc-go/ddc/core/token"
 	"github.com/bianjieai/ddc-go/ddc/keeper"
 )
 
@@ -41,19 +47,17 @@ func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 
 // DefaultGenesis returns default genesis state as raw bytes for the identity module.
 func (AppModuleBasic) DefaultGenesis(cdc codec.JSONCodec) json.RawMessage {
-	//return cdc.MustMarshalJSON(DefaultGenesisState())
-	return nil
+	return cdc.MustMarshalJSON(ddc.DefaultGenesisState())
 }
 
 // ValidateGenesis performs genesis state validation for the identity module.
 func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncodingConfig, bz json.RawMessage) error {
-	// var data GenesisState
-	// if err := cdc.UnmarshalJSON(bz, &data); err != nil {
-	// 	return fmt.Errorf("failed to unmarshal %s genesis state: %w", ModuleName, err)
-	// }
+	var data core.GenesisState
+	if err := cdc.UnmarshalJSON(bz, &data); err != nil {
+		return fmt.Errorf("failed to unmarshal %s genesis state: %w", ddc.ModuleName, err)
+	}
 
-	// return ValidateGenesis(data)
-	return nil
+	return ddc.ValidateGenesis(data)
 }
 
 // RegisterRESTRoutes registers the REST routes for the identity module.
@@ -61,7 +65,9 @@ func (AppModuleBasic) RegisterRESTRoutes(clientCtx client.Context, rtr *mux.Rout
 
 // RegisterGRPCGatewayRoutes registers the gRPC Gateway routes for the identity module.
 func (a AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-	//_ = types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))
+	auth.RegisterQueryHandlerClient(context.Background(), mux, auth.NewQueryClient(clientCtx))
+	fee.RegisterQueryHandlerClient(context.Background(), mux, fee.NewQueryClient(clientCtx))
+	token.RegisterQueryHandlerClient(context.Background(), mux, token.NewQueryClient(clientCtx))
 }
 
 // GetTxCmd returns the root tx command for the identity module.
@@ -76,7 +82,7 @@ func (AppModuleBasic) GetQueryCmd() *cobra.Command {
 
 // RegisterInterfaces registers interfaces and implementations of the identity module.
 func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
-	//types.RegisterInterfaces(registry)
+	ddc.RegisterInterfaces(registry)
 }
 
 // ____________________________________________________________________________
@@ -84,14 +90,14 @@ func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) 
 // AppModule implements an application module for the identity module.
 type AppModule struct {
 	AppModuleBasic
-	keeper keeper.Keeper
+	k keeper.Keeper
 }
 
 // NewAppModule creates a new AppModule object
-func NewAppModule(keeper keeper.Keeper) AppModule {
+func NewAppModule(k keeper.Keeper) AppModule {
 	return AppModule{
 		AppModuleBasic: AppModuleBasic{},
-		keeper:         keeper,
+		k:              k,
 	}
 }
 
@@ -102,8 +108,13 @@ func (AppModule) Name() string {
 
 // RegisterServices registers module services.
 func (am AppModule) RegisterServices(cfg module.Configurator) {
-	// types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
-	// types.RegisterQueryServer(cfg.QueryServer(), am.keeper)
+	auth.RegisterMsgServer(cfg.MsgServer(), am.k.AuthKeeper)
+	fee.RegisterMsgServer(cfg.MsgServer(), am.k.FeeKeeper)
+	token.RegisterMsgServer(cfg.MsgServer(), am.k.TokenKeeper)
+
+	auth.RegisterQueryServer(cfg.QueryServer(), am.k.AuthKeeper)
+	fee.RegisterQueryServer(cfg.QueryServer(), am.k.FeeKeeper)
+	token.RegisterQueryServer(cfg.QueryServer(), am.k.TokenKeeper)
 }
 
 // RegisterInvariants registers the identity module invariants.
@@ -126,19 +137,17 @@ func (am AppModule) LegacyQuerierHandler(legacyQuerierCdc *codec.LegacyAmino) sd
 // InitGenesis performs genesis initialization for the identity module. It returns
 // no validator updates.
 func (am AppModule) InitGenesis(ctx sdk.Context, cdc codec.JSONCodec, data json.RawMessage) []abci.ValidatorUpdate {
-	// var genesisState GenesisState
-	// cdc.MustUnmarshalJSON(data, &genesisState)
+	var genesisState core.GenesisState
+	cdc.MustUnmarshalJSON(data, &genesisState)
 
-	// InitGenesis(ctx, am.keeper, genesisState)
-	// return []abci.ValidatorUpdate{}
-	return nil
+	ddc.InitGenesis(ctx, am.k, genesisState)
+	return []abci.ValidatorUpdate{}
 }
 
 // ExportGenesis returns the exported genesis state as raw bytes for the identity module.
 func (am AppModule) ExportGenesis(ctx sdk.Context, cdc codec.JSONCodec) json.RawMessage {
-	// gs := ExportGenesis(ctx, am.keeper)
-	// return cdc.MustMarshalJSON(gs)
-	return nil
+	gs := ddc.ExportGenesis(ctx, am.k)
+	return cdc.MustMarshalJSON(gs)
 }
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
