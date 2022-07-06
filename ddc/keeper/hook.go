@@ -1,20 +1,20 @@
 package keeper
 
 import (
-	"github.com/bianjieai/ddc-go/ddc/export"
+	"github.com/bianjieai/ddc-go/ddc/exported"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	authkeeper "github.com/bianjieai/ddc-go/ddc/core/auth/keeper"
 )
 
-var _ export.Hook = Hooks{}
+var _ exported.Hook = Hooks{}
 
 type Hooks struct {
-	hs         []export.Hook
+	hs         []exported.Hook
 	authKeeper authkeeper.Keeper
 }
 
-// BeforeDenomTransfer implements export.Hook
+// BeforeDenomTransfer implements exported.Hook
 func (hs Hooks) BeforeDenomTransfer(ctx sdk.Context, protocol string, denomID string, sender sdk.AccAddress) error {
 	if !hs.authKeeper.ControlByDDC(ctx, denomID) {
 		return nil
@@ -27,7 +27,7 @@ func (hs Hooks) BeforeDenomTransfer(ctx sdk.Context, protocol string, denomID st
 	return nil
 }
 
-// BeforeTokenBurn implements export.Hook
+// BeforeTokenBurn implements exported.Hook
 func (hs Hooks) BeforeTokenBurn(ctx sdk.Context, protocol string, denomID string, tokenID string, sender sdk.AccAddress) error {
 	if !hs.authKeeper.ControlByDDC(ctx, denomID) {
 		return nil
@@ -40,7 +40,7 @@ func (hs Hooks) BeforeTokenBurn(ctx sdk.Context, protocol string, denomID string
 	return nil
 }
 
-// BeforeTokenEdit implements export.Hook
+// BeforeTokenEdit implements exported.Hook
 func (hs Hooks) BeforeTokenEdit(ctx sdk.Context, protocol string, denomID string, tokenID string, sender sdk.AccAddress) error {
 	if !hs.authKeeper.ControlByDDC(ctx, denomID) {
 		return nil
@@ -53,7 +53,7 @@ func (hs Hooks) BeforeTokenEdit(ctx sdk.Context, protocol string, denomID string
 	return nil
 }
 
-// BeforeTokenMint implements export.Hook
+// BeforeTokenMint implements exported.Hook
 func (hs Hooks) BeforeTokenMint(ctx sdk.Context, protocol string, denomID string, sender sdk.AccAddress, receiver sdk.AccAddress) error {
 	if !hs.authKeeper.ControlByDDC(ctx, denomID) {
 		return nil
@@ -66,7 +66,7 @@ func (hs Hooks) BeforeTokenMint(ctx sdk.Context, protocol string, denomID string
 	return nil
 }
 
-// BeforeTokenTransfer implements export.Hook
+// BeforeTokenTransfer implements exported.Hook
 func (hs Hooks) BeforeTokenTransfer(ctx sdk.Context, protocol string, denomID string, tokenID string, sender sdk.AccAddress, receiver sdk.AccAddress) error {
 	if !hs.authKeeper.ControlByDDC(ctx, denomID) {
 		return nil

@@ -8,7 +8,7 @@ import (
 	authkeeper "github.com/bianjieai/ddc-go/ddc/core/auth/keeper"
 	feekeeper "github.com/bianjieai/ddc-go/ddc/core/fee/keeper"
 	tokenkeeper "github.com/bianjieai/ddc-go/ddc/core/token/keeper"
-	"github.com/bianjieai/ddc-go/ddc/export"
+	"github.com/bianjieai/ddc-go/ddc/exported"
 )
 
 // Keeper of the auth store
@@ -30,7 +30,7 @@ func NewKeeper(cdc codec.Codec, key sdk.StoreKey, paramSpace paramstypes.Subspac
 // Hooks implements export.Hook
 func (k Keeper) Hooks() Hooks {
 	return Hooks{
-		hs: []export.Hook{
+		hs: []exported.Hook{
 			k.AuthKeeper,
 			k.TokenKeeper,
 			k.FeeKeeper,
