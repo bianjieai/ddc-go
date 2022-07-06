@@ -17,17 +17,22 @@ enum State {
   ACTIVE = 1;
 }
 
-enum Method {
-  MINT 				    = 0;
-  EDIT 			  		= 1;
-  BURN 					= 2;
-  TRANSFER 				= 3;
-  DDCAPPROVE  		    = 4;
-  ACCOUNTAPPROVE 	    = 5;
-  FREEZE                = 6;
-  UNFREEZE              = 7;
-  BATCHBURN				= 8;
-  BATCHTRANSFER         = 9;
+enum Function {
+  MINT 				      = 0;
+  EDIT 			  		  = 1;
+  BURN 					    = 2;
+  TRANSFER 				  = 3;
+  DDC_APPROVE  		  = 4;
+  ACCOUNT_APPROVE 	= 5;
+  FREEZE            = 6;
+  UNFREEZE          = 7;
+  BATCH_BURN				= 8;
+  BATCH_TRANSFER    = 9;
+}
+
+enum Protocol {
+  NFT = 0;
+  MT = 1;
 }
 
 message AccountInfo {
