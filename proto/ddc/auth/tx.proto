@@ -25,6 +25,8 @@ service Msg {
     rpc SyncPlatformDID(MsgSyncPlatformDID) returns (MsgSyncPlatformDIDResponse);
     // UpgradeToDDC defines a method for upgrade denom to ddc contract
     rpc UpgradeToDDC(MsgUpgradeToDDC) returns (MsgUpgradeToDDCResponse);
+    // SetSwitcherStateOfPlatform defines a method for setting switcher
+    rpc SetSwitcherStateOfPlatform(MsgSetSwitcherStateOfPlatform) returns (MsgSetSwitcherStateOfPlatformResponse);
 }
 
 // MsgAddAccount defines the Msg/AddAccount request type.
@@ -161,4 +163,17 @@ message MsgUpgradeToDDC {
 
 // MsgUpgradeToDDCResponse defines the Msg/UpgradeToDDC response type.
 message MsgUpgradeToDDCResponse {
+}
+
+// MsgSetSwitcherStateOfPlatform defines the Msg/SetSwitcherStateOfPlatform request type.
+message MsgSetSwitcherStateOfPlatform {
+    option (gogoproto.equal)           = false;
+    option (gogoproto.goproto_getters) = false;
+
+    bool     is_open              = 1;
+    string   operator             = 2;
+}
+
+// MsgSetSwitcherStateOfPlatformResponse defines the Msg/SetSwitcherStateOfPlatform response type.
+message MsgSetSwitcherStateOfPlatformResponse {
 }

@@ -87,3 +87,12 @@ func (Keeper) UpdateAccountState(context.Context, *auth.MsgUpdateAccountState) (
 func (Keeper) UpgradeToDDC(context.Context, *auth.MsgUpgradeToDDC) (*auth.MsgUpgradeToDDCResponse, error) {
 	panic("unimplemented")
 }
+
+// SetSwitcherStateOfPlatform implements auth.MsgServer
+// implement:
+// 	- setSwitcherStateOfPlatform
+// reference:
+// - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L133
+func (Keeper) SetSwitcherStateOfPlatform(context.Context, *auth.MsgSetSwitcherStateOfPlatform) (*auth.MsgSetSwitcherStateOfPlatformResponse, error) {
+	panic("unimplemented")
+}
