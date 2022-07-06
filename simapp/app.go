@@ -70,9 +70,17 @@ import (
 	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
+	"github.com/irisnet/irismod/modules/mt"
+	mtkeeper "github.com/irisnet/irismod/modules/mt/keeper"
+	mttypes "github.com/irisnet/irismod/modules/mt/types"
+
 	"github.com/irisnet/irismod/modules/nft"
 	nftkeeper "github.com/irisnet/irismod/modules/nft/keeper"
 	nfttypes "github.com/irisnet/irismod/modules/nft/types"
+
+	"github.com/bianjieai/ddc-go/ddc"
+	ddckeeper "github.com/bianjieai/ddc-go/ddc/keeper"
+	ddcmodule "github.com/bianjieai/ddc-go/ddc/module"
 
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
 )
@@ -100,6 +108,8 @@ var (
 		vesting.AppModuleBasic{},
 
 		nft.AppModuleBasic{},
+		mt.AppModuleBasic{},
+		ddcmodule.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -151,6 +161,8 @@ type SimApp struct {
 	ScopedIBCMockKeeper  capabilitykeeper.ScopedKeeper
 
 	NFTKeeper nftkeeper.Keeper
+	MTKeeper  mtkeeper.Keeper
+	DDCKeeper ddckeeper.Keeper
 
 	// the module manager
 	mm *module.Manager
@@ -192,7 +204,7 @@ func NewSimApp(
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
 		paramstypes.StoreKey, evidencetypes.StoreKey,
-		capabilitytypes.StoreKey, nfttypes.StoreKey,
+		capabilitytypes.StoreKey, nfttypes.StoreKey, mttypes.StoreKey, ddc.StoreKey,
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey)
 	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
@@ -255,6 +267,8 @@ func NewSimApp(
 	app.EvidenceKeeper = *evidenceKeeper
 
 	app.NFTKeeper = nftkeeper.NewKeeper(appCodec, keys[nfttypes.StoreKey])
+	app.MTKeeper = mtkeeper.NewKeeper(appCodec, keys[mttypes.StoreKey])
+	app.DDCKeeper = ddckeeper.NewKeeper(appCodec, keys[ddc.StoreKey])
 
 	/****  Module Options ****/
 
@@ -281,6 +295,8 @@ func NewSimApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		params.NewAppModule(app.ParamsKeeper),
 		nft.NewAppModule(appCodec, app.NFTKeeper, app.AccountKeeper, app.BankKeeper),
+		mt.NewAppModule(appCodec, app.MTKeeper, app.AccountKeeper, app.BankKeeper),
+		ddcmodule.NewAppModule(app.DDCKeeper),
 	)
 
 	// During begin block slashing happens after distr.BeginBlocker so that
@@ -293,7 +309,7 @@ func NewSimApp(
 		minttypes.ModuleName, crisistypes.ModuleName,
 		genutiltypes.ModuleName, evidencetypes.ModuleName,
 		paramstypes.ModuleName, vestingtypes.ModuleName,
-		nfttypes.ModuleName,
+		nfttypes.ModuleName, mttypes.ModuleName, ddc.ModuleName,
 	)
 	app.mm.SetOrderEndBlockers(
 		capabilitytypes.ModuleName, authtypes.ModuleName, banktypes.ModuleName,
@@ -301,7 +317,7 @@ func NewSimApp(
 		minttypes.ModuleName, crisistypes.ModuleName,
 		genutiltypes.ModuleName, evidencetypes.ModuleName,
 		paramstypes.ModuleName, vestingtypes.ModuleName,
-		nfttypes.ModuleName,
+		nfttypes.ModuleName, mttypes.ModuleName, ddc.ModuleName,
 	)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -315,7 +331,7 @@ func NewSimApp(
 		minttypes.ModuleName, crisistypes.ModuleName,
 		genutiltypes.ModuleName, evidencetypes.ModuleName,
 		paramstypes.ModuleName, vestingtypes.ModuleName,
-		nfttypes.ModuleName,
+		nfttypes.ModuleName, mttypes.ModuleName, ddc.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
@@ -338,6 +354,7 @@ func NewSimApp(
 		distr.NewAppModule(appCodec, app.DistrKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		slashing.NewAppModule(appCodec, app.SlashingKeeper, app.AccountKeeper, app.BankKeeper, app.StakingKeeper),
 		nft.NewAppModule(appCodec, app.NFTKeeper, app.AccountKeeper, app.BankKeeper),
+		mt.NewAppModule(appCodec, app.MTKeeper, app.AccountKeeper, app.BankKeeper),
 	)
 
 	app.sm.RegisterStoreDecoders()
