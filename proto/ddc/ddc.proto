@@ -44,3 +44,19 @@ message AccountInfo {
   State platform_state 	= 6;
   State operator_state  = 7;
 }
+
+message FeeRule {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  Function function         	  = 1;
+  uint64   fee                  = 2;
+}
+
+message Balance {
+  option (gogoproto.equal)           = false;
+  option (gogoproto.goproto_getters) = false;
+
+  string address         	  = 1;
+  uint64 amount               = 2;
+}
