@@ -1,6 +1,26 @@
 #!/usr/bin/make -f
 
 PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
+BUILDDIR ?= $(CURDIR)/build
+export GO111MODULE = on
+
+###############################################################################
+###                                  Build                                  ###
+###############################################################################
+
+BUILD_TARGETS := build install
+
+build: BUILD_ARGS=-o $(BUILDDIR)/
+build-linux:
+	GOOS=linux GOARCH=amd64 LEDGER_ENABLED=false $(MAKE) build
+
+$(BUILD_TARGETS): go.sum $(BUILDDIR)/
+	go $@ -mod=readonly $(BUILD_FLAGS) $(BUILD_ARGS) ./...
+
+$(BUILDDIR)/:
+	mkdir -p $(BUILDDIR)/
+
+########################################
 
 all: tools lint
 
