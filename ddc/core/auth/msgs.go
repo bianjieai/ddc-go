@@ -3,7 +3,6 @@ package auth
 import (
 	"strings"
 
-	"github.com/bianjieai/ddc-go/ddc/core"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -28,10 +27,6 @@ func (m MsgAddAccount) ValidateBasic() error {
 
 	if len(strings.TrimSpace(m.Name)) == 0 {
 		return sdkerrors.Wrap(ErrInvalidName, "Name cannot be empty!")
-	}
-
-	if _, ok := core.Role_value[m.Role.String()]; !ok {
-		return sdkerrors.Wrap(ErrInvalidRole, "DID cannot be empty!")
 	}
 
 	_, err := sdk.AccAddressFromBech32(m.Address)

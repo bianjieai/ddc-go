@@ -51,8 +51,23 @@ func (k Keeper) AddAccount(goctx context.Context, msg *auth.MsgAddAccount) (*aut
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L103
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L172
-func (Keeper) AddBatchAccount(context.Context, *auth.MsgAddBatchAccount) (*auth.MsgAddBatchAccountResponse, error) {
-	panic("unimplemented")
+func (k Keeper) AddBatchAccount(goctx context.Context, msg *auth.MsgAddBatchAccount) (*auth.MsgAddBatchAccountResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	account, err := k.GetAccount(ctx, msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	switch account.Role {
+	case core.Role_OPERATOR:
+		return &auth.MsgAddBatchAccountResponse{}, k.addBatchAccountByOperator(ctx,
+			msg.Addresses, msg.Names, msg.Dids, msg.LeaderDIDs, account)
+	case core.Role_PLATFORM_MANAGER:
+		return &auth.MsgAddBatchAccountResponse{}, k.addBatchAccountByPlatform(ctx,
+			msg.Addresses, msg.Names, msg.Dids, account)
+	default:
+		return &auth.MsgAddBatchAccountResponse{}, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid operate")
+	}
 }
 
 // AddFunction implements auth.MsgServer

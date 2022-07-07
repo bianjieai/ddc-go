@@ -47,6 +47,29 @@ func (k Keeper) addAccountByPlatform(ctx sdk.Context,
 	return k.addAccount(ctx, account, accountDID, sender.DID, accountName, core.Role_CONSUMER)
 }
 
+// implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L103
+func (k Keeper) addBatchAccountByPlatform(ctx sdk.Context,
+	accounts []string,
+	accountNames []string,
+	accountDIDs []string,
+	sender *core.AccountInfo,
+) error {
+	if !k.requireOpenedSwitcherOfPlatform(ctx) {
+		return sdkerrors.Wrapf(auth.ErrPlatformSwitcherClosed, "Account: %s no access", sender.Address)
+	}
+
+	for i, _ := range accounts {
+		if !k.requireNotExist(ctx, accounts[i]) {
+			return sdkerrors.Wrapf(auth.ErrAccountHasExist, "Account: %s has exist", accounts[i])
+		}
+		err := k.addAccount(ctx, accounts[i], accountDIDs[i], sender.DID, accountNames[i], core.Role_CONSUMER)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L158
 func (k Keeper) addAccountByOperator(ctx sdk.Context,
 	account,
@@ -71,6 +94,23 @@ func (k Keeper) addAccountByOperator(ctx sdk.Context,
 		return sdkerrors.Wrapf(auth.ErrPlatformNotExist, "leaderDID: %s not exist", leaderDID)
 	}
 	return k.addAccount(ctx, account, accountDID, leaderDID, accountName, role)
+}
+
+// implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L172
+func (k Keeper) addBatchAccountByOperator(ctx sdk.Context,
+	accounts []string,
+	accountNames []string,
+	accountDIDs []string,
+	leaderDIDs []string,
+	sender *core.AccountInfo,
+) error {
+	for i, _ := range accounts {
+		if err := k.addAccountByOperator(ctx, accounts[i],
+			accountNames[i], accountDIDs[i], leaderDIDs[i], sender); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func (k Keeper) addAccount(ctx sdk.Context,
