@@ -1,13 +1,14 @@
 package cli
 
 import (
-	"github.com/bianjieai/ddc-go/ddc/core/auth"
 	"github.com/spf13/cobra"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/bianjieai/ddc-go/ddc/core/auth"
 )
 
 const (
