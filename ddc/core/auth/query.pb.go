@@ -147,7 +147,8 @@ func (m *QueryFunctionsRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryFunctionsRequest proto.InternalMessageInfo
 
-// QueryFunctionsResponse is the request type for the Query/Functions RPC method.
+// QueryFunctionsResponse is the request type for the Query/Functions RPC
+// method.
 type QueryFunctionsResponse struct {
 	Functions []core.Function `protobuf:"varint,1,rep,packed,name=functions,proto3,enum=bianjieai.ddc.Function" json:"functions,omitempty"`
 }

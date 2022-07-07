@@ -69,7 +69,8 @@ func (m *QueryBalanceOfRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBalanceOfRequest proto.InternalMessageInfo
 
-// QueryBalanceOfResponse is the request type for the Query/BalanceOf RPC method.
+// QueryBalanceOfResponse is the request type for the Query/BalanceOf RPC
+// method.
 type QueryBalanceOfResponse struct {
 	Amount uint64 `protobuf:"varint,1,opt,name=amount,proto3" json:"amount,omitempty"`
 }
@@ -107,7 +108,8 @@ func (m *QueryBalanceOfResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBalanceOfResponse proto.InternalMessageInfo
 
-// QueryBalanceOfBatchRequest is the request type for the Query/BalanceOfBatch RPC method.
+// QueryBalanceOfBatchRequest is the request type for the Query/BalanceOfBatch
+// RPC method.
 type QueryBalanceOfBatchRequest struct {
 	// address is the address to query account for.
 	Address []string `protobuf:"bytes,1,rep,name=address,proto3" json:"address,omitempty"`
@@ -146,7 +148,8 @@ func (m *QueryBalanceOfBatchRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryBalanceOfBatchRequest proto.InternalMessageInfo
 
-// QueryBalanceOfBatchResponse is the request type for the Query/BalanceOfBatch RPC method.
+// QueryBalanceOfBatchResponse is the request type for the Query/BalanceOfBatch
+// RPC method.
 type QueryBalanceOfBatchResponse struct {
 	Amount []uint64 `protobuf:"varint,1,rep,packed,name=amount,proto3" json:"amount,omitempty"`
 }
@@ -262,7 +265,8 @@ func (m *QueryFeeRuleResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryFeeRuleResponse proto.InternalMessageInfo
 
-// QueryTotalSupplyRequest is the request type for the Query/TotalSupply RPC method.
+// QueryTotalSupplyRequest is the request type for the Query/TotalSupply RPC
+// method.
 type QueryTotalSupplyRequest struct {
 }
 
@@ -299,7 +303,8 @@ func (m *QueryTotalSupplyRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryTotalSupplyRequest proto.InternalMessageInfo
 
-// QueryTotalSupplyResponse is the request type for the Query/TotalSupply RPC method.
+// QueryTotalSupplyResponse is the request type for the Query/TotalSupply RPC
+// method.
 type QueryTotalSupplyResponse struct {
 	Amount uint64 `protobuf:"varint,1,opt,name=amount,proto3" json:"amount,omitempty"`
 }

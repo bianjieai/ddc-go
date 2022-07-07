@@ -542,7 +542,8 @@ func (m *MsgApproveCrossPlatform) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgApproveCrossPlatform proto.InternalMessageInfo
 
-// MsgApproveCrossPlatformResponse defines the Msg/ApproveCrossPlatform response type.
+// MsgApproveCrossPlatformResponse defines the Msg/ApproveCrossPlatform response
+// type.
 type MsgApproveCrossPlatformResponse struct {
 }
 
@@ -732,7 +733,8 @@ func (m *MsgUpgradeToDDCResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgUpgradeToDDCResponse proto.InternalMessageInfo
 
-// MsgSetSwitcherStateOfPlatform defines the Msg/SetSwitcherStateOfPlatform request type.
+// MsgSetSwitcherStateOfPlatform defines the Msg/SetSwitcherStateOfPlatform
+// request type.
 type MsgSetSwitcherStateOfPlatform struct {
 	IsOpen   bool   `protobuf:"varint,1,opt,name=is_open,json=isOpen,proto3" json:"is_open,omitempty"`
 	Operator string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
@@ -771,7 +773,8 @@ func (m *MsgSetSwitcherStateOfPlatform) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgSetSwitcherStateOfPlatform proto.InternalMessageInfo
 
-// MsgSetSwitcherStateOfPlatformResponse defines the Msg/SetSwitcherStateOfPlatform response type.
+// MsgSetSwitcherStateOfPlatformResponse defines the
+// Msg/SetSwitcherStateOfPlatform response type.
 type MsgSetSwitcherStateOfPlatformResponse struct {
 }
 

@@ -1,6 +1,8 @@
 #!/usr/bin/make -f
 
 PROJECT_NAME = $(shell git remote get-url origin | xargs basename -s .git)
+DOCKER := $(shell which docker)
+DOCKER_BUF := $(DOCKER) run --rm -v $(CURDIR):/workspace --workdir /workspace bufbuild/buf:1.0.0-rc8
 BUILDDIR ?= $(CURDIR)/build
 export GO111MODULE = on
 
@@ -47,17 +49,12 @@ containerProtoGenAny=$(PROJECT_NAME)-proto-gen-any-$(protoVer)
 containerProtoGenSwagger=$(PROJECT_NAME)-proto-gen-swagger-$(protoVer)
 containerProtoFmt=$(PROJECT_NAME)-proto-fmt-$(protoVer)	
 
-proto-all: proto-gen
+proto-all: proto-gen proto-format
 
 proto-gen:
 	@echo "Generating Protobuf files"
 	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGen}$$"; then docker start -a $(containerProtoGen); else docker run --name $(containerProtoGen) -v $(CURDIR):/workspace --workdir /workspace $(protoImageName) \
 		sh ./scripts/protocgen.sh; fi
-
-proto-swagger-gen:
-	@echo "Generating Protobuf Swagger"
-	@if docker ps -a --format '{{.Names}}' | grep -Eq "^${containerProtoGenSwagger}$$"; then docker start -a $(containerProtoGenSwagger); else docker run --name $(containerProtoGenSwagger) -v $(CURDIR):/workspace --workdir /workspace $(protoImageName) \
-		sh ./scripts/protoc-swagger-gen.sh; fi
 
 proto-format:
 	@echo "Formatting Protobuf files"

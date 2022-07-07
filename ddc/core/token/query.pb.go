@@ -70,7 +70,8 @@ func (m *QueryApprovedForAllRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryApprovedForAllRequest proto.InternalMessageInfo
 
-// QueryBalanceOfResponse is the request type for the Query/BalanceOf RPC method.
+// QueryBalanceOfResponse is the request type for the Query/BalanceOf RPC
+// method.
 type QueryApprovedForAllResponse struct {
 	Operator []string `protobuf:"bytes,1,rep,name=operator,proto3" json:"operator,omitempty"`
 }
@@ -108,7 +109,8 @@ func (m *QueryApprovedForAllResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryApprovedForAllResponse proto.InternalMessageInfo
 
-// QueryTokenApprovedRequest is the request type for the Query/TokenApproved RPC method.
+// QueryTokenApprovedRequest is the request type for the Query/TokenApproved RPC
+// method.
 type QueryTokenApprovedRequest struct {
 	Denom   string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
 	TokenId string `protobuf:"bytes,2,opt,name=token_id,json=tokenId,proto3" json:"token_id,omitempty"`
@@ -147,7 +149,8 @@ func (m *QueryTokenApprovedRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryTokenApprovedRequest proto.InternalMessageInfo
 
-// QueryTokenApprovedResponse is the request type for the Query/TokenApproved RPC method.
+// QueryTokenApprovedResponse is the request type for the Query/TokenApproved
+// RPC method.
 type QueryTokenApprovedResponse struct {
 	Operator string `protobuf:"bytes,1,opt,name=operator,proto3" json:"operator,omitempty"`
 }
