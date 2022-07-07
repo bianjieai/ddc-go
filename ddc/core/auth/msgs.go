@@ -50,8 +50,30 @@ func (m MsgAddAccount) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgAddBatchAccount) ValidateBasic() error {
-	//TODO
-	return nil
+	if len(m.Addresses) == 0 {
+		return sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "the length of addresses can not be zero")
+	}
+
+	if len(m.Addresses) != len(m.Names) || len(m.Dids) != len(m.Names) {
+		return sdkerrors.Wrap(ErrLengthMismatch, "the length of addresses,names,dids mismatch")
+	}
+
+	for i := range m.Addresses {
+		if len(strings.TrimSpace(m.Dids[i])) == 0 {
+			return sdkerrors.Wrap(ErrInvalidDID, "DID cannot be empty!")
+		}
+
+		if len(strings.TrimSpace(m.Names[i])) == 0 {
+			return sdkerrors.Wrap(ErrInvalidName, "Name cannot be empty!")
+		}
+
+		_, err := sdk.AccAddressFromBech32(m.Addresses[i])
+		if err != nil {
+			return err
+		}
+	}
+	_, err := sdk.AccAddressFromBech32(m.Sender)
+	return err
 }
 
 // GetSigners implements Msg.

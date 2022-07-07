@@ -11,5 +11,6 @@ var (
 	ErrAccountNotExist        = sdkerrors.Register("ddc", 5, "account not exist")
 	ErrAccountHasExist        = sdkerrors.Register("ddc", 6, "account has exist")
 	ErrPlatformNotExist       = sdkerrors.Register("ddc", 7, "platform not exist")
-	ErrPlatformSwitcherClosed = sdkerrors.Register("ddc", 7, "platform switcher closed")
+	ErrPlatformSwitcherClosed = sdkerrors.Register("ddc", 8, "platform switcher closed")
+	ErrLengthMismatch         = sdkerrors.Register("ddc", 9, "length mismatch")
 )
