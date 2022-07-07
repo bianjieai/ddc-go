@@ -70,10 +70,11 @@ proto-lint:
 ########################################
 ### Testing
 
+TEST_PACKAGES=./...
 test: test-unit
 
 test-unit:
-	@VERSION=$(VERSION) go test -mod=readonly -tags='ledger test_ledger_mock' ${PACKAGES_UNITTEST}
+	go test -mod=readonly ${PACKAGES_UNITTEST}
 
 lint: golangci-lint
 	golangci-lint run
