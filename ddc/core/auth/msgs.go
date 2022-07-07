@@ -3,6 +3,7 @@ package auth
 import (
 	"strings"
 
+	"github.com/bianjieai/ddc-go/ddc/core"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -108,8 +109,24 @@ func (m MsgDeleteAccount) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgAddFunction) ValidateBasic() error {
-	//TODO
-	return nil
+	if _, ok := core.Role_value[m.Role.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidRole, "role not exist")
+	}
+
+	if _, ok := core.Protocol_value[m.Protocol.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidProtocol, "protocol not exist")
+	}
+
+	if _, ok := core.Function_value[m.Function.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidFunction, "function not exist")
+	}
+
+	if len(strings.TrimSpace(m.Denom)) == 0 {
+		return sdkerrors.Wrap(ErrInvalidDenom, "denom cannot be empty")
+	}
+
+	_, err := sdk.AccAddressFromBech32(m.Operator)
+	return err
 }
 
 // GetSigners implements Msg.

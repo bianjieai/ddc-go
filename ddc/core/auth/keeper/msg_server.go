@@ -93,8 +93,27 @@ func (k Keeper) AddBatchAccount(goctx context.Context, msg *auth.MsgAddBatchAcco
 // 	- addFunction
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L317
-func (Keeper) AddFunction(context.Context, *auth.MsgAddFunction) (*auth.MsgAddFunctionResponse, error) {
-	panic("unimplemented")
+func (k Keeper) AddFunction(goctx context.Context, msg *auth.MsgAddFunction) (res *auth.MsgAddFunctionResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	account, err := k.GetAccount(ctx, msg.Operator)
+	if err != nil {
+		return nil, err
+	}
+	if account.Role != core.Role_OPERATOR {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "account: %s no access", msg.Operator)
+	}
+
+	if err = k.addFunction(ctx, msg.Role, msg.Protocol, msg.Denom, msg.Function); err != nil {
+		return res, err
+	}
+	ctx.EventManager().EmitTypedEvent(&auth.EventAddFunction{
+		Operator: msg.Operator,
+		Role:     msg.Role,
+		Protocol: msg.Protocol,
+		Denom:    msg.Denom,
+		Function: msg.Function,
+	})
+	return
 }
 
 // ApproveCrossPlatform implements auth.MsgServer
@@ -107,9 +126,8 @@ func (Keeper) ApproveCrossPlatform(context.Context, *auth.MsgApproveCrossPlatfor
 }
 
 // DeleteAccount implements auth.MsgServer
-func (Keeper) DeleteAccount(context.Context, *auth.MsgDeleteAccount) (*auth.MsgDeleteAccountResponse, error) {
-	//TODO
-	return &auth.MsgDeleteAccountResponse{}, nil
+func (k Keeper) DeleteAccount(goctx context.Context, msg *auth.MsgDeleteAccount) (*auth.MsgDeleteAccountResponse, error) {
+	panic("unimplemented")
 }
 
 // DeleteFunction implements auth.MsgServer
@@ -117,8 +135,27 @@ func (Keeper) DeleteAccount(context.Context, *auth.MsgDeleteAccount) (*auth.MsgD
 // 	- delFunction
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L352
-func (Keeper) DeleteFunction(context.Context, *auth.MsgDeleteFunction) (*auth.MsgDeleteFunctionResponse, error) {
-	panic("unimplemented")
+func (k Keeper) DeleteFunction(goctx context.Context, msg *auth.MsgDeleteFunction) (res *auth.MsgDeleteFunctionResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	account, err := k.GetAccount(ctx, msg.Operator)
+	if err != nil {
+		return nil, err
+	}
+	if account.Role != core.Role_OPERATOR {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "account: %s no access", msg.Operator)
+	}
+
+	if err = k.deleteFunction(ctx, msg.Role, msg.Protocol, msg.Denom, msg.Function); err != nil {
+		return res, err
+	}
+	ctx.EventManager().EmitTypedEvent(&auth.EventDeleteFunction{
+		Operator: msg.Operator,
+		Role:     msg.Role,
+		Protocol: msg.Protocol,
+		Denom:    msg.Denom,
+		Function: msg.Function,
+	})
+	return
 }
 
 // SyncPlatformDID implements auth.MsgServer

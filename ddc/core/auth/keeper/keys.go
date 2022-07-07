@@ -1,5 +1,13 @@
 package keeper
 
+import (
+	"bytes"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/bianjieai/ddc-go/ddc/core"
+)
+
 var (
 	AccountKey        = []byte{0x01}
 	RoleAndFunBindKey = []byte{0x02}
@@ -7,6 +15,9 @@ var (
 	PlatformDIDKey    = []byte{0x04}
 	DDCKey            = []byte{0x05}
 	PlatformSwitcher  = []byte{0x06}
+
+	Delimiter   = []byte{0x00}
+	Placeholder = []byte{0x01}
 )
 
 const (
@@ -19,6 +30,26 @@ func accountKey(address string) []byte {
 	copy(key, AccountKey)
 	copy(key[len(AccountKey):], []byte(address))
 	return key
+}
+
+// roleAndFunBindKey returns the byte representation of the function
+func prefixRoleAndFunBindKey(role core.Role, protocol core.Protocol, denom string) []byte {
+	rbz := sdk.Uint64ToBigEndian(uint64(role))
+	pbz := sdk.Uint64ToBigEndian(uint64(protocol))
+	dbz := []byte(denom)
+
+	len := len(RoleAndFunBindKey) + len(dbz) + len(rbz) + len(pbz)
+
+	b := bytes.NewBuffer(make([]byte, 0, len))
+	b.Write(RoleAndFunBindKey)
+	b.Write(rbz)
+	b.Write(pbz)
+	b.Write(dbz)
+	return b.Bytes()
+}
+
+func funKey(function core.Function) []byte {
+	return sdk.Uint64ToBigEndian(uint64(function))
 }
 
 // accountKey returns the byte representation of the AccountInfo
