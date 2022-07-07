@@ -1,0 +1,14 @@
+syntax = "proto3";
+package bianjieai.ddc.auth;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+
+option go_package = "github.com/bianjieai/ddc-go/ddc/core/auth";
+// Params defines a module's parameters
+message Params {
+  option (gogoproto.equal) = true;
+  option (gogoproto.goproto_getters) = false;
+
+  string root = 1;
+}

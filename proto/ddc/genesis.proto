@@ -1,0 +1,11 @@
+syntax = "proto3";
+package bianjieai.ddc;
+
+import "gogoproto/gogo.proto";
+
+option go_package = "github.com/bianjieai/ddc-go/ddc/core";
+option (gogoproto.goproto_getters_all) = false;
+
+// GenesisState defines the ddc module's genesis state.
+// TODO
+message GenesisState {}
