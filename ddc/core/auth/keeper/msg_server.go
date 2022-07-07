@@ -3,6 +3,10 @@ package keeper
 import (
 	context "context"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/bianjieai/ddc-go/ddc/core"
 	"github.com/bianjieai/ddc-go/ddc/core/auth"
 )
 
@@ -17,8 +21,36 @@ var _ auth.MsgServer = Keeper{}
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L58
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L81
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L158
-func (Keeper) AddAccount(context.Context, *auth.MsgAddAccount) (*auth.MsgAddAccountResponse, error) {
-	panic("unimplemented")
+func (k Keeper) AddAccount(goctx context.Context, msg *auth.MsgAddAccount) (res *auth.MsgAddAccountResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	if k.isRoot(ctx, msg.Sender) {
+		return &auth.MsgAddAccountResponse{}, k.addOperator(ctx, msg.Address, msg.Name, msg.Did)
+	}
+
+	account, err := k.GetAccount(ctx, msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	switch account.Role {
+	case core.Role_OPERATOR:
+		err = k.addAccountByOperator(ctx,
+			msg.Address, msg.Name, msg.Did, msg.LeaderDID, account)
+	case core.Role_PLATFORM_MANAGER:
+		err = k.addAccountByPlatform(ctx,
+			msg.Address, msg.Name, msg.Did, account)
+	default:
+		return &auth.MsgAddAccountResponse{}, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid operate")
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitTypedEvent(&auth.EventAddAccount{
+		Caller:  msg.Sender,
+		Account: msg.Address,
+	})
+	return
 }
 
 // AddBatchAccount implements auth.MsgServer
@@ -28,8 +60,32 @@ func (Keeper) AddAccount(context.Context, *auth.MsgAddAccount) (*auth.MsgAddAcco
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L103
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L172
-func (Keeper) AddBatchAccount(context.Context, *auth.MsgAddBatchAccount) (*auth.MsgAddBatchAccountResponse, error) {
-	panic("unimplemented")
+func (k Keeper) AddBatchAccount(goctx context.Context, msg *auth.MsgAddBatchAccount) (res *auth.MsgAddBatchAccountResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	account, err := k.GetAccount(ctx, msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	switch account.Role {
+	case core.Role_OPERATOR:
+		err = k.addBatchAccountByOperator(ctx,
+			msg.Addresses, msg.Names, msg.Dids, msg.LeaderDIDs, account)
+	case core.Role_PLATFORM_MANAGER:
+		err = k.addBatchAccountByPlatform(ctx,
+			msg.Addresses, msg.Names, msg.Dids, account)
+	default:
+		return &auth.MsgAddBatchAccountResponse{}, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid operate")
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitTypedEvent(&auth.EventAddBatchAccount{
+		Caller:  msg.Sender,
+		Address: msg.Addresses,
+	})
+	return
 }
 
 // AddFunction implements auth.MsgServer
