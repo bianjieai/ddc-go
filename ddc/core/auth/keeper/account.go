@@ -58,12 +58,12 @@ func (k Keeper) addBatchAccountByPlatform(ctx sdk.Context,
 		return sdkerrors.Wrapf(auth.ErrPlatformSwitcherClosed, "Account: %s no access", sender.Address)
 	}
 
-	for i, _ := range accounts {
+	for i := range accounts {
 		if !k.requireNotExist(ctx, accounts[i]) {
 			return sdkerrors.Wrapf(auth.ErrAccountHasExist, "Account: %s has exist", accounts[i])
 		}
-		err := k.addAccount(ctx, accounts[i], accountDIDs[i], sender.DID, accountNames[i], core.Role_CONSUMER)
-		if err != nil {
+		if err := k.addAccount(ctx, accounts[i],
+			accountDIDs[i], sender.DID, accountNames[i], core.Role_CONSUMER); err != nil {
 			return err
 		}
 	}
@@ -104,7 +104,7 @@ func (k Keeper) addBatchAccountByOperator(ctx sdk.Context,
 	leaderDIDs []string,
 	sender *core.AccountInfo,
 ) error {
-	for i, _ := range accounts {
+	for i := range accounts {
 		if err := k.addAccountByOperator(ctx, accounts[i],
 			accountNames[i], accountDIDs[i], leaderDIDs[i], sender); err != nil {
 			return err
