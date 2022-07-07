@@ -1,0 +1,44 @@
+syntax = "proto3";
+package bianjieai.ddc.auth;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "ddc/ddc.proto";
+
+option go_package = "github.com/bianjieai/ddc-go/ddc/core/auth";
+
+message EventAddAccount {
+  string caller = 1;
+  string account = 2;
+}
+
+message EventAddBatchAccount {
+  string caller = 1;
+  repeated string address = 2;
+}
+
+message EventAddFunction {
+  string operator = 1;
+  Role role = 2;
+  Protocol protocol = 3;
+  string denom = 4;
+  Function function = 5;
+}
+
+message EventDeleteFunction {
+  string operator = 1;
+  Role role = 2;
+  Protocol protocol = 3;
+  string denom = 4;
+  Function function = 5;
+}
+
+message EventSetSwitcherStateOfPlatform {
+  string operator = 1;
+  bool is_open = 2;
+}
+
+message EventSyncPlatformDID {
+  string address = 1;
+  repeated string dids = 2 [ (gogoproto.customname) = "DIDs" ];
+}
