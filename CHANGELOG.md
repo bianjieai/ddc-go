@@ -37,33 +37,8 @@ Ref: https://keepachangelog.com/en/1.0.0/
 
 ## [Unreleased]
 
-## [v1.2.0] - 2021-12-31
-
-### Application
-
-- (modules/perm) [#33]  Add EVM contract permission management
-
-## [v1.1.1] - 2021-12-07
-### Improvements
-- (modules/identity) [#32] add `data` field, and the field length limit is only related to the block and transaction size limit.
-
-## [v1.1.0] - 2021-10-27
-### Bug Fixes
-- [#30] Bump Cosmos-SDK to v0.44.2
-
-## [v1.0.0] - 2021-04-13
-
 ### Features
 
-- Add modules `perm`, `params`, `node`, `slashing`, `identity`, `upgrade`.
-
 <!-- Release links -->
-[v1.2.0]: https://github.com/bianjieai/iritamod/releases/tag/v1.2.0
-[v1.1.1]: https://github.com/bianjieai/iritamod/releases/tag/v1.1.1
-[v1.1.0]: https://github.com/bianjieai/iritamod/releases/tag/v1.1.0
-[v1.0.0]: https://github.com/bianjieai/iritamod/releases/tag/v1.0.0
 
 <!-- Pull request links -->
-[#33]: https://github.com/bianjieai/iritamod/pull/33
-[#32]: https://github.com/bianjieai/iritamod/pull/32
-[#30]: https://github.com/bianjieai/iritamod/pull/30
