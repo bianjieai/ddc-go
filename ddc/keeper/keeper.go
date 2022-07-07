@@ -20,9 +20,10 @@ type Keeper struct {
 
 // NewKeeper creates a new nft Keeper instance
 func NewKeeper(cdc codec.Codec, key sdk.StoreKey, paramSpace paramstypes.Subspace) Keeper {
+	authKeeper := authkeeper.NewKeeper(cdc, key, paramSpace)
 	return Keeper{
-		AuthKeeper:  authkeeper.NewKeeper(cdc, key, paramSpace),
-		FeeKeeper:   feekeeper.NewKeeper(cdc, key),
+		AuthKeeper:  authKeeper,
+		FeeKeeper:   feekeeper.NewKeeper(cdc, key, authKeeper),
 		TokenKeeper: tokenkeeper.NewKeeper(cdc, key),
 	}
 }
