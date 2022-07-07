@@ -3,6 +3,10 @@ package keeper
 import (
 	context "context"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"github.com/bianjieai/ddc-go/ddc/core"
 	"github.com/bianjieai/ddc-go/ddc/core/auth"
 )
 
@@ -17,8 +21,27 @@ var _ auth.MsgServer = Keeper{}
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L58
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L81
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L158
-func (Keeper) AddAccount(context.Context, *auth.MsgAddAccount) (*auth.MsgAddAccountResponse, error) {
-	panic("unimplemented")
+func (k Keeper) AddAccount(goctx context.Context, msg *auth.MsgAddAccount) (*auth.MsgAddAccountResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	if k.isRoot(ctx, msg.Sender) {
+		return &auth.MsgAddAccountResponse{}, k.addOperator(ctx, msg.Address, msg.Name, msg.Did)
+	}
+
+	account, err := k.GetAccount(ctx, msg.Sender)
+	if err != nil {
+		return nil, err
+	}
+
+	switch account.Role {
+	case core.Role_OPERATOR:
+		return &auth.MsgAddAccountResponse{}, k.addAccountByOperator(ctx,
+			msg.Address, msg.Name, msg.Did, msg.LeaderDID, account)
+	case core.Role_PLATFORM_MANAGER:
+		return &auth.MsgAddAccountResponse{}, k.addAccountByPlatform(ctx,
+			msg.Address, msg.Name, msg.Did, account)
+	default:
+		return &auth.MsgAddAccountResponse{}, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "invalid operate")
+	}
 }
 
 // AddBatchAccount implements auth.MsgServer
