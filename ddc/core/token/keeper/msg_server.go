@@ -1,21 +1,65 @@
 package keeper
 
 import (
-	context "context"
-
+	"context"
+	"github.com/bianjieai/ddc-go/ddc/core"
 	"github.com/bianjieai/ddc-go/ddc/core/token"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 var _ token.MsgServer = Keeper{}
 
 // Approve implements token.MsgServer
-func (Keeper) Approve(context.Context, *token.MsgApprove) (*token.MsgApproveResponse, error) {
-	panic("unimplemented")
+// implement:
+//  - approve
+// reference:
+//  - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L224
+func (k Keeper) Approve(goctx context.Context, msg *token.MsgApprove) (res *token.MsgApproveResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+
+	err = k.approve(ctx, msg.Denom, msg.TokenID, msg.Operator, msg.To)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitTypedEvents(&token.EventApprove{
+		Denom:    msg.Denom,
+		TokenID:  msg.TokenID,
+		Operator: msg.Operator,
+		To:       msg.To,
+	})
+
+	return
 }
 
 // ApproveForAll implements token.MsgServer
-func (Keeper) ApproveForAll(context.Context, *token.MsgApproveForAll) (*token.MsgApproveForAllResponse, error) {
-	panic("unimplemented")
+// implement:
+// - setApprovalForAll
+// reference:
+// - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L274
+// - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L191
+func (k Keeper) ApproveForAll(goctx context.Context, msg *token.MsgApproveForAll) (res *token.MsgApproveForAllResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+
+	switch msg.Protocol {
+	case core.Protocol_NFT:
+		err = k.setApproveForAllDDC721(ctx, msg.Denom, msg.Sender, msg.Operator, msg.Protocol)
+	case core.Protocol_MT:
+		err = k.setApproveForAllDDC1155(ctx, msg.Denom, msg.Sender, msg.Operator, msg.Protocol)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	ctx.EventManager().EmitTypedEvent(&token.MsgApproveForAll{
+		Protocol: msg.Protocol,
+		Denom:    msg.Denom,
+		Operator: msg.Operator,
+		Sender:   msg.Sender,
+	})
+
+	return
 }
 
 // BatchBurn implements token.MsgServer

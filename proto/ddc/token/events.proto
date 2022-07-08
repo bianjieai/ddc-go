@@ -1,0 +1,53 @@
+syntax = "proto3";
+package bianjieai.ddc.auth;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "ddc/ddc.proto";
+
+option go_package = "github.com/bianjieai/ddc-go/ddc/core/token";
+
+message EventApprove {
+  string denom = 1;
+  string token_id = 2 [ (gogoproto.customname) = "TokenID"];
+  string operator = 3;
+  string to = 4;
+}
+
+message EventApproveForAll {
+  Protocol protocol = 1;
+  string denom = 2;
+  string operator = 3;
+  string sender = 4;
+}
+
+message EventFreeze {
+  Protocol protocol = 1;
+  string denom = 2;
+  string token_id = 3 [ (gogoproto.customname) = "TokenID" ];
+  string operator = 4;
+}
+
+message EventUnfreeze {
+  Protocol protocol = 1;
+  string denom = 2;
+  string token_id = 3 [ (gogoproto.customname) = "TokenID" ];
+  string operator = 4;
+}
+
+message EventBatchBurn {
+  Protocol protocol = 1;
+  string denom = 2;
+  repeated string token_ids = 3 [ (gogoproto.customname) = "TokenIDs" ];
+  string operator = 4;
+}
+
+message EventBatchTransfer {
+  Protocol protocol = 1;
+  string denom = 2;
+  repeated string token_ids = 3 [ (gogoproto.customname) = "TokenIDs" ];
+  repeated uint64 amount = 4;
+  string from = 5;
+  string to = 6;
+  string sender = 7;
+}
