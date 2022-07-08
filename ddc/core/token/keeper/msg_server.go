@@ -73,11 +73,46 @@ func (Keeper) BatchTransfer(context.Context, *token.MsgBatchTransfer) (*token.Ms
 }
 
 // Freeze implements token.MsgServer
-func (Keeper) Freeze(context.Context, *token.MsgFreeze) (*token.MsgFreezeResponse, error) {
-	panic("unimplemented")
+// implement:
+// - freeze
+// reference:
+// - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L405
+// - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L281
+func (k Keeper) Freeze(goctx context.Context, msg *token.MsgFreeze) (res *token.MsgFreezeResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+
+	switch msg.Protocol {
+	case core.Protocol_NFT:
+		err = k.freezeDDC721(ctx, msg.Denom, msg.TokenID, msg.Operator, msg.Protocol)
+	case core.Protocol_MT:
+		err = k.freezeDDC1155(ctx, msg.Denom, msg.TokenID, msg.Operator, msg.Protocol)
+	}
+
+	ctx.EventManager().EmitTypedEvent(&token.EventFreeze{
+		Protocol: msg.Protocol,
+		Denom:    msg.Denom,
+		TokenID:  msg.TokenID,
+		Operator: msg.Operator,
+	})
+	return
 }
 
 // Unfreeze implements token.MsgServer
-func (Keeper) Unfreeze(context.Context, *token.MsgUnfreeze) (*token.MsgUnfreezeResponse, error) {
-	panic("unimplemented")
+func (k Keeper) Unfreeze(goctx context.Context, msg *token.MsgUnfreeze) (res *token.MsgUnfreezeResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+
+	switch msg.Protocol {
+	case core.Protocol_NFT:
+		err = k.unfreezeDDC721(ctx, msg.Denom, msg.TokenID, msg.Operator, msg.Protocol)
+	case core.Protocol_MT:
+		err = k.unfreezeDDC1155(ctx, msg.Denom, msg.TokenID, msg.Operator, msg.Protocol)
+	}
+
+	ctx.EventManager().EmitTypedEvent(&token.EventUnfreeze{
+		Protocol: msg.Protocol,
+		Denom:    msg.Denom,
+		TokenID:  msg.TokenID,
+		Operator: msg.Operator,
+	})
+	return
 }

@@ -21,8 +21,8 @@ func (k Keeper) approve(ctx sdk.Context, denomID, tokenID, operator, to string) 
 	}
 
 	// require nft not in blocklist
-	if k.isInBlocklist(ctx, denomID, tokenID) {
-		return sdkerrors.Wrapf(token.ErrBlockListedDDC, "ddc is in blocklist")
+	if k.isInBlocklist(ctx, appendProtocolPrefix(denomID, core.Protocol_NFT), tokenID) {
+		return sdkerrors.Wrapf(token.ErrDDCBlockList, "ddc is already in blocklist")
 	}
 
 	// require not approving to owner
@@ -115,11 +115,6 @@ func (k Keeper) requireApprovalConstraintsDDC1155(ctx sdk.Context, operator stri
 func (k Keeper) isApprovedForAll(ctx sdk.Context, denom, owner, operator string) bool {
 	store := k.prefixStore(ctx)
 	return store.Has(accountApprovalKey(denom, owner, operator))
-}
-
-func (k Keeper) isInBlocklist(ctx sdk.Context, denom, tokenID string) bool {
-	store := k.prefixStore(ctx)
-	return store.Has(tokenBlocklistKey(denom, tokenID))
 }
 
 func (k Keeper) setDDCApprovals(ctx sdk.Context, denom, tokenId, to string) {
