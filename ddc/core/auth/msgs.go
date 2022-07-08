@@ -226,3 +226,15 @@ func (m MsgUpgradeToDDC) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Operator)
 	return []sdk.AccAddress{addr}
 }
+
+// ValidateBasic implements Msg.
+func (m MsgSetSwitcherStateOfPlatform) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Operator)
+	return err
+}
+
+// GetSigners implements Msg.
+func (m MsgSetSwitcherStateOfPlatform) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Operator)
+	return []sdk.AccAddress{addr}
+}
