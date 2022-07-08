@@ -137,8 +137,24 @@ func (m MsgAddFunction) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgDeleteFunction) ValidateBasic() error {
-	//TODO
-	return nil
+	if _, ok := core.Role_value[m.Role.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidRole, "role not exist")
+	}
+
+	if _, ok := core.Protocol_value[m.Protocol.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidProtocol, "protocol not exist")
+	}
+
+	if _, ok := core.Function_value[m.Function.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidFunction, "function not exist")
+	}
+
+	if len(strings.TrimSpace(m.Denom)) == 0 {
+		return sdkerrors.Wrap(ErrInvalidDenom, "denom cannot be empty")
+	}
+
+	_, err := sdk.AccAddressFromBech32(m.Operator)
+	return err
 }
 
 // GetSigners implements Msg.
@@ -149,8 +165,18 @@ func (m MsgDeleteFunction) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgApproveCrossPlatform) ValidateBasic() error {
-	//TODO
-	return nil
+	_, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		return err
+	}
+
+	_, err = sdk.AccAddressFromBech32(m.To)
+	if err != nil {
+		return err
+	}
+
+	_, err = sdk.AccAddressFromBech32(m.Operator)
+	return err
 }
 
 // GetSigners implements Msg.
@@ -161,7 +187,9 @@ func (m MsgApproveCrossPlatform) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgSyncPlatformDID) ValidateBasic() error {
-	//TODO
+	if len(m.DIDs) == 0 {
+		return sdkerrors.Wrap(ErrInvalidOperator, "dids can not be empty")
+	}
 	return nil
 }
 
@@ -173,8 +201,16 @@ func (m MsgSyncPlatformDID) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgUpgradeToDDC) ValidateBasic() error {
-	//TODO
-	return nil
+	if _, ok := core.Protocol_value[m.Protocol.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidProtocol, "protocol not exist")
+	}
+
+	if len(strings.TrimSpace(m.Denom)) == 0 {
+		return sdkerrors.Wrap(ErrInvalidDenom, "denom cannot be empty")
+	}
+
+	_, err := sdk.AccAddressFromBech32(m.Operator)
+	return err
 }
 
 // GetSigners implements Msg.
