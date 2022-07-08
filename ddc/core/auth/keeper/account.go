@@ -139,6 +139,31 @@ func (k Keeper) addAccount(ctx sdk.Context,
 	return nil
 }
 
+func (k Keeper) approveCrossPlatform(ctx sdk.Context, from, to string) error {
+	fromInfo, err := k.requireAccountActive(ctx, from)
+	if err != nil {
+		return err
+	}
+
+	toInfo, err := k.requireAccountActive(ctx, to)
+	if err != nil {
+		return err
+	}
+
+	if !(fromInfo.Role == core.Role_PLATFORM_MANAGER &&
+		toInfo.Role == core.Role_PLATFORM_MANAGER) {
+		return sdkerrors.Wrap(auth.ErrInvalidCrossPlatformApproval, "both should be `platform` roles")
+	}
+
+	if fromInfo.DID == toInfo.DID {
+		return sdkerrors.Wrap(auth.ErrInvalidCrossPlatformApproval, "both should not be the same platform account")
+	}
+
+	store := k.prefixStore(ctx)
+	store.Set(crossPlatformKey(fromInfo.DID, toInfo.DID), Placeholder)
+	return nil
+}
+
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L690
 func (k Keeper) requireNotExist(ctx sdk.Context, address string) bool {
 	store := k.prefixStore(ctx)
@@ -154,6 +179,23 @@ func (k Keeper) requireExistPlatformDID(ctx sdk.Context, did string) bool {
 func (k Keeper) requireOpenedSwitcherOfPlatform(ctx sdk.Context) bool {
 	store := k.prefixStore(ctx)
 	return store.Has(platformSwitcher())
+}
+
+// implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L676
+func (k Keeper) requireAccountActive(ctx sdk.Context, address string) (*core.AccountInfo, error) {
+	account, err := k.GetAccount(ctx, address)
+	if err != nil {
+		return nil, err
+	}
+
+	if !k.isActive(account) {
+		return nil, sdkerrors.Wrapf(auth.ErrAccountNotActive, "account: %s is not active", address)
+	}
+	return account, nil
+}
+
+func (k Keeper) isActive(account *core.AccountInfo) bool {
+	return account.OperatorState == core.State_ACTIVE && account.PlatformState == core.State_ACTIVE
 }
 
 func (k Keeper) isRoot(ctx sdk.Context, address string) bool {

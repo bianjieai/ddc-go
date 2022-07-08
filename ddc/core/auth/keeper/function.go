@@ -46,7 +46,11 @@ func (k Keeper) deleteFunction(ctx sdk.Context,
 	return nil
 }
 
-func (k Keeper) getFunction(ctx sdk.Context, role core.Role, protocol core.Protocol, denom string) (fun []core.Function) {
+func (k Keeper) getFunction(ctx sdk.Context,
+	role core.Role,
+	protocol core.Protocol,
+	denom string,
+) (fun []core.Function) {
 	iterator := sdk.KVStorePrefixIterator(k.prefixStore(ctx), prefixRoleAndFunBindKey(role, protocol, denom))
 	defer iterator.Close()
 
@@ -54,4 +58,33 @@ func (k Keeper) getFunction(ctx sdk.Context, role core.Role, protocol core.Proto
 		fun = append(fun, core.Function(sdk.BigEndianToUint64(iterator.Value())))
 	}
 	return
+}
+
+func (k Keeper) hasFunction(ctx sdk.Context,
+	role core.Role,
+	protocol core.Protocol,
+	denom string,
+	function core.Function,
+) bool {
+	store := k.funcStore(ctx, role, protocol, denom)
+	key := funKey(function)
+	return store.Has(key)
+}
+
+// implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L422
+func (k Keeper) hasFunctionPermission(ctx sdk.Context,
+	address string,
+	protocol core.Protocol,
+	denom string,
+	function core.Function,
+) bool {
+	account, err := k.GetAccount(ctx, address)
+	if err != nil {
+		return false
+	}
+	if k.isActive(account) {
+		return false
+	}
+
+	return k.hasFunction(ctx, account.Role, protocol, denom, function)
 }

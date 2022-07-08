@@ -52,6 +52,20 @@ func funKey(function core.Function) []byte {
 	return sdk.Uint64ToBigEndian(uint64(function))
 }
 
+func crossPlatformKey(fromDID, toDID string) []byte {
+	fromBz := []byte(fromDID)
+	toBz := []byte(toDID)
+
+	len := len(CrossPlatformKey) + len(fromBz) + len(Delimiter) + len(toBz)
+
+	b := bytes.NewBuffer(make([]byte, 0, len))
+	b.Write(CrossPlatformKey)
+	b.Write(fromBz)
+	b.Write(Delimiter)
+	b.Write(toBz)
+	return b.Bytes()
+}
+
 // accountKey returns the byte representation of the AccountInfo
 func platformDIDKey(accountDID string) []byte {
 	key := make([]byte, len(PlatformDIDKey)+len(accountDID))

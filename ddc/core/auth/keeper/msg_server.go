@@ -121,12 +121,25 @@ func (k Keeper) AddFunction(goctx context.Context, msg *auth.MsgAddFunction) (re
 // 	- crossPlatformApproval
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L373
-func (Keeper) ApproveCrossPlatform(context.Context, *auth.MsgApproveCrossPlatform) (*auth.MsgApproveCrossPlatformResponse, error) {
-	panic("unimplemented")
+func (k Keeper) ApproveCrossPlatform(goctx context.Context, msg *auth.MsgApproveCrossPlatform) (res *auth.MsgApproveCrossPlatformResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	account, err := k.GetAccount(ctx, msg.Operator)
+	if err != nil {
+		return nil, err
+	}
+	if account.Role != core.Role_OPERATOR {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "account: %s no access", msg.Operator)
+	}
+
+	if err := k.approveCrossPlatform(ctx, msg.From, msg.To); err != nil {
+		return nil, err
+	}
+	return
 }
 
 // DeleteAccount implements auth.MsgServer
 func (k Keeper) DeleteAccount(goctx context.Context, msg *auth.MsgDeleteAccount) (*auth.MsgDeleteAccountResponse, error) {
+	//TODO
 	panic("unimplemented")
 }
 
