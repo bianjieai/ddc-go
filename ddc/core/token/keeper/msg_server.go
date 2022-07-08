@@ -22,7 +22,12 @@ func (k Keeper) Approve(goctx context.Context, msg *token.MsgApprove) (res *toke
 		return nil, err
 	}
 
-	// TODO: event
+	ctx.EventManager().EmitTypedEvents(&token.EventApprove{
+		Denom:    msg.Denom,
+		TokenID:  msg.TokenID,
+		Operator: msg.Operator,
+		To:       msg.To,
+	})
 
 	return
 }
@@ -47,7 +52,12 @@ func (k Keeper) ApproveForAll(goctx context.Context, msg *token.MsgApproveForAll
 		return nil, err
 	}
 
-	// TODO: event
+	ctx.EventManager().EmitTypedEvent(&token.MsgApproveForAll{
+		Protocol: msg.Protocol,
+		Denom:    msg.Denom,
+		Operator: msg.Operator,
+		Sender:   msg.Sender,
+	})
 
 	return
 }
