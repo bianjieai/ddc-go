@@ -1,26 +1,27 @@
 package keeper
 
 import (
+	"github.com/bianjieai/ddc-go/ddc/core"
 	"github.com/bianjieai/ddc-go/ddc/core/token"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // implements: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L224
-func (k Keeper) approve(ctx sdk.Context, denom, tokenID, operator, to string) error {
+func (k Keeper) approve(ctx sdk.Context, denomID, tokenID, operator, to string) error {
 
 	if !k.requireApprovalConstraintsDDC721(ctx, operator, to) {
 		// TODO
 	}
 
 	// require nft exists
-	nft, err := k.nftKeeper.GetNFT(ctx, denom, tokenID)
+	nft, err := k.nftKeeper.GetNFT(ctx, denomID, tokenID)
 	if err != nil {
 		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
 	}
 
 	// require nft not in blocklist
-	if k.isInBlocklist(ctx, denom, tokenID) {
+	if k.isInBlocklist(ctx, denomID, tokenID) {
 		return sdkerrors.Wrapf(token.ErrBlockListedDDC, "ddc is in blocklist")
 	}
 
@@ -31,17 +32,17 @@ func (k Keeper) approve(ctx sdk.Context, denom, tokenID, operator, to string) er
 	}
 
 	// require operator is owner or is approved for all
-	if operator != owner && !k.isApprovedForAll(ctx, denom, owner, operator) {
+	if operator != owner && !k.isApprovedForAll(ctx, denomID, owner, operator) {
 		return sdkerrors.Wrapf(token.ErrInvalidOperator, "approve operator is not owner nor approved for all")
 	}
 
-	k.setDDCApprovals(ctx, denom, tokenID, to)
+	k.setDDCApprovals(ctx, appendProtocolPrefix(denomID, core.Protocol_NFT), tokenID, to)
 
 	return nil
 }
 
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L274
-func (k Keeper) setApproveForAllDDC721(ctx sdk.Context, denomID, sender, operator string) error {
+func (k Keeper) setApproveForAllDDC721(ctx sdk.Context, denomID, sender, operator string, protocol core.Protocol) error {
 
 	if !k.requireApprovalConstraintsDDC721(ctx, operator, operator) {
 		// TODO
@@ -57,13 +58,13 @@ func (k Keeper) setApproveForAllDDC721(ctx sdk.Context, denomID, sender, operato
 		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender is not the owner")
 	}
 
-	k.setAccountApprovalKey(ctx, denomID, denom.Creator, operator)
+	k.setAccountApprovalKey(ctx, appendProtocolPrefix(denomID, protocol), denom.Creator, operator)
 
 	return nil
 }
 
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L191
-func (k Keeper) setApproveForAllDDC1155(ctx sdk.Context, denomID, sender, operator string) error {
+func (k Keeper) setApproveForAllDDC1155(ctx sdk.Context, denomID, sender, operator string, protocol core.Protocol) error {
 
 	if !k.requireApprovalConstraintsDDC1155(ctx, operator) {
 		// TODO
@@ -80,7 +81,7 @@ func (k Keeper) setApproveForAllDDC1155(ctx sdk.Context, denomID, sender, operat
 		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender is not the owner")
 	}
 
-	k.setAccountApprovalKey(ctx, denomID, denom.Owner, operator)
+	k.setAccountApprovalKey(ctx, appendProtocolPrefix(denomID, protocol), denom.Owner, operator)
 
 	return nil
 }

@@ -43,9 +43,9 @@ func (k Keeper) ApproveForAll(goctx context.Context, msg *token.MsgApproveForAll
 
 	switch msg.Protocol {
 	case core.Protocol_NFT:
-		err = k.setApproveForAllDDC721(ctx, msg.Denom, msg.Sender, msg.Operator)
+		err = k.setApproveForAllDDC721(ctx, msg.Denom, msg.Sender, msg.Operator, msg.Protocol)
 	case core.Protocol_MT:
-		err = k.setApproveForAllDDC1155(ctx, msg.Denom, msg.Sender, msg.Operator)
+		err = k.setApproveForAllDDC1155(ctx, msg.Denom, msg.Sender, msg.Operator, msg.Protocol)
 	}
 
 	if err != nil {
