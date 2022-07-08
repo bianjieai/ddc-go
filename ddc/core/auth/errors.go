@@ -20,4 +20,5 @@ var (
 	ErrFunctionNotExist       = sdkerrors.Register("ddc", 14, "function not exists")
 	ErrAccountNotActive       = sdkerrors.Register("ddc", 15, "account has been frozen")
 	ErrInvalidOperator        = sdkerrors.Register("ddc", 16, "invalid operate")
+	ErrInvalidState           = sdkerrors.Register("ddc", 17, "invalid state")
 )

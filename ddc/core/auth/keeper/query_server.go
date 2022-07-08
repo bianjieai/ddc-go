@@ -2,11 +2,14 @@ package keeper
 
 import (
 	context "context"
+	"strings"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"github.com/bianjieai/ddc-go/ddc/core"
 	"github.com/bianjieai/ddc-go/ddc/core/auth"
 )
 
@@ -39,6 +42,30 @@ func (k Keeper) Account(goctx context.Context, req *auth.QueryAccountRequest) (*
 }
 
 // Functions implements auth.QueryServer
-func (Keeper) Functions(goctx context.Context, req *auth.QueryFunctionsRequest) (*auth.QueryFunctionsResponse, error) {
-	panic("unimplemented")
+func (k Keeper) Functions(goctx context.Context, req *auth.QueryFunctionsRequest) (*auth.QueryFunctionsResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	if _, ok := core.Role_value[req.Role.String()]; !ok {
+		return nil, sdkerrors.Wrap(auth.ErrInvalidRole, "role not exist")
+	}
+
+	if _, ok := core.Protocol_value[req.Protocol.String()]; !ok {
+		return nil, sdkerrors.Wrap(auth.ErrInvalidProtocol, "protocol not exist")
+	}
+
+	if len(strings.TrimSpace(req.Denom)) == 0 {
+		return nil, sdkerrors.Wrap(auth.ErrInvalidDenom, "denom cannot be empty")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goctx)
+	return &auth.QueryFunctionsResponse{
+		Functions: k.getFunction(ctx, req.Role, req.Protocol, req.Denom),
+	}, nil
 }
+
+// hasFunctionPermission
+// switcherStateOfPlatform
+// onePlatformCheck
+// crossPlatformCheck

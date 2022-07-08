@@ -85,8 +85,17 @@ func (m MsgAddBatchAccount) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgUpdateAccountState) ValidateBasic() error {
-	//TODO
-	return nil
+	_, err := sdk.AccAddressFromBech32(m.Address)
+	if err != nil {
+		return err
+	}
+
+	if _, ok := core.State_value[m.State.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidState, "state not exist")
+	}
+
+	_, err = sdk.AccAddressFromBech32(m.Sender)
+	return err
 }
 
 // GetSigners implements Msg.
@@ -97,8 +106,7 @@ func (m MsgUpdateAccountState) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgDeleteAccount) ValidateBasic() error {
-	//TODO
-	return nil
+	return sdkerrors.Wrap(ErrInvalidOperator, "not implement")
 }
 
 // GetSigners implements Msg.
