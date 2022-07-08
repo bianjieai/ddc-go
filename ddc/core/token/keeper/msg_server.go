@@ -2,15 +2,26 @@ package keeper
 
 import (
 	context "context"
-
 	"github.com/bianjieai/ddc-go/ddc/core/token"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 var _ token.MsgServer = Keeper{}
 
 // Approve implements token.MsgServer
-func (Keeper) Approve(context.Context, *token.MsgApprove) (*token.MsgApproveResponse, error) {
-	panic("unimplemented")
+// implement:
+//  - approve
+// reference:
+//  - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L224
+func (k Keeper) Approve(goctx context.Context, msg *token.MsgApprove) (res *token.MsgApproveResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+
+	err = k.approve(ctx, msg.Denom, msg.TokenID, msg.Operator, msg.To)
+	if err != nil {
+		return nil, err
+	}
+
+	return
 }
 
 // ApproveForAll implements token.MsgServer
