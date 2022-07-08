@@ -113,6 +113,57 @@ func (k Keeper) addBatchAccountByOperator(ctx sdk.Context,
 	return nil
 }
 
+func (k Keeper) updateAccountState(ctx sdk.Context,
+	address string,
+	state core.State,
+	changePlatformState bool,
+	sender string,
+) error {
+	account, err := k.GetAccount(ctx, address)
+	if err != nil {
+		return err
+	}
+	senderAcc, err := k.GetAccount(ctx, sender)
+	if err != nil {
+		return err
+	}
+
+	if !k.isActive(senderAcc) {
+		return sdkerrors.Wrapf(auth.ErrAccountNotActive, "account: %s is not active", address)
+	}
+
+	if !(account.LeaderDID == senderAcc.DID || senderAcc.Role == core.Role_OPERATOR) {
+		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "account's role does not match")
+	}
+
+	if senderAcc.Role == core.Role_CONSUMER {
+		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "wrong role")
+	}
+
+	switch senderAcc.Role {
+	case core.Role_CONSUMER:
+		return sdkerrors.Wrap(sdkerrors.ErrUnauthorized, "wrong role")
+	case core.Role_OPERATOR:
+		if changePlatformState {
+			if account.PlatformState == state {
+				return sdkerrors.Wrap(auth.ErrInvalidOperator, "PlatformState doesn't need to change")
+			}
+			account.PlatformState = state
+		} else {
+			if account.OperatorState == state {
+				return sdkerrors.Wrap(auth.ErrInvalidOperator, "operatorState doesn't need to change")
+			}
+			account.OperatorState = state
+		}
+	case core.Role_PLATFORM_MANAGER:
+		if account.PlatformState == state {
+			return sdkerrors.Wrap(auth.ErrInvalidOperator, "platformState doesn't need to change")
+		}
+		account.PlatformState = state
+	}
+	return k.setAccount(ctx, account)
+}
+
 func (k Keeper) addAccount(ctx sdk.Context,
 	address string,
 	did string,
@@ -129,14 +180,7 @@ func (k Keeper) addAccount(ctx sdk.Context,
 		PlatformState: core.State_ACTIVE,
 		OperatorState: core.State_ACTIVE,
 	}
-	bz, err := k.cdc.Marshal(account)
-	if err != nil {
-		return err
-	}
-
-	store := k.prefixStore(ctx)
-	store.Set(accountKey(address), bz)
-	return nil
+	return k.setAccount(ctx, account)
 }
 
 func (k Keeper) approveCrossPlatform(ctx sdk.Context, from, to string) error {
@@ -152,16 +196,21 @@ func (k Keeper) approveCrossPlatform(ctx sdk.Context, from, to string) error {
 
 	if !(fromInfo.Role == core.Role_PLATFORM_MANAGER &&
 		toInfo.Role == core.Role_PLATFORM_MANAGER) {
-		return sdkerrors.Wrap(auth.ErrInvalidCrossPlatformApproval, "both should be `platform` roles")
+		return sdkerrors.Wrap(auth.ErrInvalidOperator, "both should be `platform` roles")
 	}
 
 	if fromInfo.DID == toInfo.DID {
-		return sdkerrors.Wrap(auth.ErrInvalidCrossPlatformApproval, "both should not be the same platform account")
+		return sdkerrors.Wrap(auth.ErrInvalidOperator, "both should not be the same platform account")
 	}
 
 	store := k.prefixStore(ctx)
 	store.Set(crossPlatformKey(fromInfo.DID, toInfo.DID), Placeholder)
 	return nil
+}
+
+func (k Keeper) getPlatformSwitcher(ctx sdk.Context) bool {
+	store := k.prefixStore(ctx)
+	return store.Has(platformSwitcher())
 }
 
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L690
@@ -196,6 +245,17 @@ func (k Keeper) requireAccountActive(ctx sdk.Context, address string) (*core.Acc
 
 func (k Keeper) isActive(account *core.AccountInfo) bool {
 	return account.OperatorState == core.State_ACTIVE && account.PlatformState == core.State_ACTIVE
+}
+
+func (k Keeper) setAccount(ctx sdk.Context, account *core.AccountInfo) error {
+	bz, err := k.cdc.Marshal(account)
+	if err != nil {
+		return err
+	}
+
+	store := k.prefixStore(ctx)
+	store.Set(accountKey(account.Address), bz)
+	return nil
 }
 
 func (k Keeper) isRoot(ctx sdk.Context, address string) bool {

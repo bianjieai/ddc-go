@@ -36,6 +36,5 @@ func (k Keeper) Hooks() Hooks {
 			k.TokenKeeper,
 			k.FeeKeeper,
 		},
-		authKeeper: k.AuthKeeper,
 	}
 }

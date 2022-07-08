@@ -75,10 +75,12 @@ func platformDIDKey(accountDID string) []byte {
 }
 
 // ddcKey returns the byte representation of the ddc
-func ddcKey(denomID string) []byte {
-	key := make([]byte, len(DDCKey)+len(denomID))
+func ddcKey(protocol core.Protocol, denomID string) []byte {
+	pbz := sdk.Uint64ToBigEndian(uint64(protocol))
+	key := make([]byte, len(DDCKey)+len(pbz)+len(denomID))
 	copy(key, DDCKey)
-	copy(key[len(DDCKey):], denomID)
+	copy(key[len(DDCKey):], pbz)
+	copy(key[len(DDCKey)+len(pbz):], []byte(denomID))
 	return key
 }
 
