@@ -3,7 +3,7 @@ package keeper
 var (
 	DDCApprovalKey     = []byte{0x01}
 	AccountApprovalKey = []byte{0x02}
-	TokenBlackListKey  = []byte{0x03}
+	TokenBlockListKey  = []byte{0x03}
 )
 
 const (
@@ -26,10 +26,10 @@ func accountApprovalKey(denom, owner, operator string) []byte {
 	return key
 }
 
-func tokenBlacklistKey(denom, tokenID string) []byte {
+func tokenBlocklistKey(denom, tokenID string) []byte {
 	str := denom + tokenID
-	key := make([]byte, len(TokenBlackListKey)+len(str))
-	copy(key, TokenBlackListKey)
-	copy(key[len(TokenBlackListKey):], str)
+	key := make([]byte, len(TokenBlockListKey)+len(str))
+	copy(key, TokenBlockListKey)
+	copy(key[len(TokenBlockListKey):], str)
 	return key
 }

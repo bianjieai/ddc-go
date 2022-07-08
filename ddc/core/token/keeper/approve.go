@@ -16,12 +16,12 @@ func (k Keeper) approve(ctx sdk.Context, denom, tokenID, operator, to string) er
 	// require nft exists
 	nft, err := k.nftKeeper.GetNFT(ctx, denom, tokenID)
 	if err != nil {
-		return nil
+		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
 	}
 
-	// require nft not blacklisted
-	if !k.isInBlacklist(ctx, denom, tokenID) {
-		return sdkerrors.Wrapf(token.ErrBlackListedDDC, "ddc is blacklisted")
+	// require nft not in blocklist
+	if k.isInBlocklist(ctx, denom, tokenID) {
+		return sdkerrors.Wrapf(token.ErrBlockListedDDC, "ddc is in blocklist")
 	}
 
 	// require not approving to owner
@@ -41,50 +41,46 @@ func (k Keeper) approve(ctx sdk.Context, denom, tokenID, operator, to string) er
 }
 
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L274
-func (k Keeper) setApproveForAllDDC721(ctx sdk.Context, denom, sender, operator string) error {
+func (k Keeper) setApproveForAllDDC721(ctx sdk.Context, denomID, sender, operator string) error {
 
 	if !k.requireApprovalConstraintsDDC721(ctx, operator, operator) {
 		// TODO
 	}
 
-	nft, exist := k.nftKeeper.GetDenom(ctx, denom)
+	denom, exist := k.nftKeeper.GetDenom(ctx, denomID)
 	if !exist {
-		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "nft denom is not existent")
+		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "denom is not existent")
 	}
 
 	// NOTE: is Creator the Owner?
-	if nft.Creator != sender {
-		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender is not the nft owner")
+	if denom.Creator != sender {
+		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender is not the owner")
 	}
 
-	k.setAccountApprovalKey(ctx, denom, nft.Creator, operator)
-
-	// TODO: event
+	k.setAccountApprovalKey(ctx, denomID, denom.Creator, operator)
 
 	return nil
 }
 
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L191
-func (k Keeper) setApproveForAllDDC1155(ctx sdk.Context, denom, sender, operator string) error {
+func (k Keeper) setApproveForAllDDC1155(ctx sdk.Context, denomID, sender, operator string) error {
 
 	if !k.requireApprovalConstraintsDDC1155(ctx, operator) {
 		// TODO
 	}
 
 	// require mt denom exists
-	mt, exist := k.mtKeeper.GetDenom(ctx, denom)
+	denom, exist := k.mtKeeper.GetDenom(ctx, denomID)
 	if !exist {
-		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "mt denom is not existent")
+		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "denom is not existent")
 	}
 
 	// require sender is not owner
-	if mt.Owner != sender {
-		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender is not the mt owner")
+	if denom.Owner != sender {
+		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender is not the owner")
 	}
 
-	k.setAccountApprovalKey(ctx, denom, mt.Owner, operator)
-
-	// TODO: event
+	k.setAccountApprovalKey(ctx, denomID, denom.Owner, operator)
 
 	return nil
 }
@@ -120,10 +116,9 @@ func (k Keeper) isApprovedForAll(ctx sdk.Context, denom, owner, operator string)
 	return store.Has(accountApprovalKey(denom, owner, operator))
 }
 
-// implement:
-func (k Keeper) isInBlacklist(ctx sdk.Context, denom, tokenID string) bool {
+func (k Keeper) isInBlocklist(ctx sdk.Context, denom, tokenID string) bool {
 	store := k.prefixStore(ctx)
-	return store.Has(tokenBlacklistKey(denom, tokenID))
+	return store.Has(tokenBlocklistKey(denom, tokenID))
 }
 
 func (k Keeper) setDDCApprovals(ctx sdk.Context, denom, tokenId, to string) {

@@ -7,7 +7,7 @@ import (
 var (
 	ErrInvalidDenom    = sdkerrors.Register("ddc", 40, "invalid Denom")
 	ErrInvalidTokenID  = sdkerrors.Register("ddc", 41, "invalid TokenID")
-	ErrBlackListedDDC  = sdkerrors.Register("ddc", 42, "blacklisted DDC")
+	ErrBlockListedDDC  = sdkerrors.Register("ddc", 42, "blocklisted DDC")
 	ErrNonExistentDDC  = sdkerrors.Register("ddc", 43, "DDC is not existent")
 	ErrInvalidApprovee = sdkerrors.Register("ddc", 44, "invalid Approvee")
 	ErrInvalidOperator = sdkerrors.Register("ddc", 45, "invalid Operator")
