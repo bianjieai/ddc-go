@@ -65,7 +65,60 @@ func (k Keeper) Functions(goctx context.Context, req *auth.QueryFunctionsRequest
 	}, nil
 }
 
-// hasFunctionPermission
-// switcherStateOfPlatform
-// onePlatformCheck
-// crossPlatformCheck
+// CrossPlatformAble implements auth.QueryServer
+// implements: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L497
+func (k Keeper) CrossPlatformAble(goctx context.Context, req *auth.QueryCrossPlatformAbleRequest) (res *auth.QueryCrossPlatformAbleResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	fromAcc, err := k.GetAccount(ctx, req.From)
+	if err != nil {
+		return nil, err
+	}
+	if !k.isActive(fromAcc) {
+		return nil, sdkerrors.Wrapf(auth.ErrAccountNotActive, "account: %s is not active", req.From)
+	}
+
+	toAcc, err := k.GetAccount(ctx, req.To)
+	if err != nil {
+		return nil, err
+	}
+	if !k.isActive(toAcc) {
+		return nil, sdkerrors.Wrapf(auth.ErrAccountNotActive, "account: %s is not active", req.To)
+	}
+
+	// 2. Check role
+	// a. All are platform roles
+	if fromAcc.Role == core.Role_PLATFORM_MANAGER && toAcc.Role == core.Role_PLATFORM_MANAGER {
+		res.Enabled = (fromAcc.LeaderDID == toAcc.LeaderDID && k.crossPlatformApproval(ctx, fromAcc.DID, toAcc.DID))
+		return
+	}
+
+	// b. `from` is the platform, `to` is the consumer
+	if fromAcc.Role == core.Role_PLATFORM_MANAGER && toAcc.Role == core.Role_CONSUMER {
+		res.Enabled = k.crossPlatformApproval(ctx, fromAcc.DID, toAcc.LeaderDID)
+		return
+	}
+
+	// c. `to` is the platform, `from` is the consumer
+	if fromAcc.Role == core.Role_CONSUMER && toAcc.Role == core.Role_PLATFORM_MANAGER {
+		res.Enabled = k.crossPlatformApproval(ctx, fromAcc.LeaderDID, toAcc.DID)
+		return
+	}
+	// d. Both are consumers
+	if fromAcc.Role == core.Role_CONSUMER && toAcc.Role == core.Role_CONSUMER {
+		res.Enabled = k.crossPlatformApproval(ctx, fromAcc.LeaderDID, toAcc.LeaderDID)
+		return
+	}
+
+	res.Enabled = false
+	return
+}
+
+// DDCs implements auth.QueryServer
+func (k Keeper) DDCs(goctx context.Context, req *auth.QueryDDCsRequest) (*auth.QueryDDCsResponse, error) {
+	panic("unimplemented")
+}
+
+// SwitcherState implements auth.QueryServer
+func (k Keeper) SwitcherState(goctx context.Context, req *auth.QuerySwitcherStateRequest) (*auth.QuerySwitcherStateResponse, error) {
+	panic("unimplemented")
+}

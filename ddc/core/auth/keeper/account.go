@@ -208,6 +208,11 @@ func (k Keeper) approveCrossPlatform(ctx sdk.Context, from, to string) error {
 	return nil
 }
 
+func (k Keeper) crossPlatformApproval(ctx sdk.Context, fromDID, toDID string) bool {
+	store := k.prefixStore(ctx)
+	return store.Has(crossPlatformKey(fromDID, toDID))
+}
+
 func (k Keeper) getPlatformSwitcher(ctx sdk.Context) bool {
 	store := k.prefixStore(ctx)
 	return store.Has(platformSwitcher())
