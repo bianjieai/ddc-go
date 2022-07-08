@@ -1,7 +1,8 @@
 package keeper
 
 import (
-	context "context"
+	"context"
+	"github.com/bianjieai/ddc-go/ddc/core"
 	"github.com/bianjieai/ddc-go/ddc/core/token"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -21,12 +22,34 @@ func (k Keeper) Approve(goctx context.Context, msg *token.MsgApprove) (res *toke
 		return nil, err
 	}
 
+	// TODO: event
+
 	return
 }
 
 // ApproveForAll implements token.MsgServer
-func (Keeper) ApproveForAll(context.Context, *token.MsgApproveForAll) (*token.MsgApproveForAllResponse, error) {
-	panic("unimplemented")
+// implement:
+// - setApprovalForAll
+// reference:
+// - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L274
+// - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L191
+func (k Keeper) ApproveForAll(goctx context.Context, msg *token.MsgApproveForAll) (res *token.MsgApproveForAllResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+
+	switch msg.Protocol {
+	case core.Protocol_NFT:
+		err = k.setApproveForAllDDC721(ctx, msg.Denom, msg.Sender, msg.Operator)
+	case core.Protocol_MT:
+		err = k.setApproveForAllDDC1155(ctx, msg.Denom, msg.Sender, msg.Operator)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: event
+
+	return
 }
 
 // BatchBurn implements token.MsgServer
