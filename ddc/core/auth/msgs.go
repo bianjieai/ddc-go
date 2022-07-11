@@ -3,6 +3,7 @@ package auth
 import (
 	"strings"
 
+	"github.com/bianjieai/ddc-go/ddc/core"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -84,8 +85,17 @@ func (m MsgAddBatchAccount) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgUpdateAccountState) ValidateBasic() error {
-	//TODO
-	return nil
+	_, err := sdk.AccAddressFromBech32(m.Address)
+	if err != nil {
+		return err
+	}
+
+	if _, ok := core.State_value[m.State.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidState, "state not exist")
+	}
+
+	_, err = sdk.AccAddressFromBech32(m.Sender)
+	return err
 }
 
 // GetSigners implements Msg.
@@ -96,8 +106,7 @@ func (m MsgUpdateAccountState) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgDeleteAccount) ValidateBasic() error {
-	//TODO
-	return nil
+	return sdkerrors.Wrap(ErrInvalidOperator, "not implement")
 }
 
 // GetSigners implements Msg.
@@ -108,8 +117,24 @@ func (m MsgDeleteAccount) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgAddFunction) ValidateBasic() error {
-	//TODO
-	return nil
+	if _, ok := core.Role_value[m.Role.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidRole, "role not exist")
+	}
+
+	if _, ok := core.Protocol_value[m.Protocol.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidProtocol, "protocol not exist")
+	}
+
+	if _, ok := core.Function_value[m.Function.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidFunction, "function not exist")
+	}
+
+	if len(strings.TrimSpace(m.Denom)) == 0 {
+		return sdkerrors.Wrap(ErrInvalidDenom, "denom cannot be empty")
+	}
+
+	_, err := sdk.AccAddressFromBech32(m.Operator)
+	return err
 }
 
 // GetSigners implements Msg.
@@ -120,8 +145,24 @@ func (m MsgAddFunction) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgDeleteFunction) ValidateBasic() error {
-	//TODO
-	return nil
+	if _, ok := core.Role_value[m.Role.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidRole, "role not exist")
+	}
+
+	if _, ok := core.Protocol_value[m.Protocol.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidProtocol, "protocol not exist")
+	}
+
+	if _, ok := core.Function_value[m.Function.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidFunction, "function not exist")
+	}
+
+	if len(strings.TrimSpace(m.Denom)) == 0 {
+		return sdkerrors.Wrap(ErrInvalidDenom, "denom cannot be empty")
+	}
+
+	_, err := sdk.AccAddressFromBech32(m.Operator)
+	return err
 }
 
 // GetSigners implements Msg.
@@ -132,8 +173,18 @@ func (m MsgDeleteFunction) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgApproveCrossPlatform) ValidateBasic() error {
-	//TODO
-	return nil
+	_, err := sdk.AccAddressFromBech32(m.From)
+	if err != nil {
+		return err
+	}
+
+	_, err = sdk.AccAddressFromBech32(m.To)
+	if err != nil {
+		return err
+	}
+
+	_, err = sdk.AccAddressFromBech32(m.Operator)
+	return err
 }
 
 // GetSigners implements Msg.
@@ -144,7 +195,9 @@ func (m MsgApproveCrossPlatform) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgSyncPlatformDID) ValidateBasic() error {
-	//TODO
+	if len(m.DIDs) == 0 {
+		return sdkerrors.Wrap(ErrInvalidOperator, "dids can not be empty")
+	}
 	return nil
 }
 
@@ -156,12 +209,32 @@ func (m MsgSyncPlatformDID) GetSigners() []sdk.AccAddress {
 
 // ValidateBasic implements Msg.
 func (m MsgUpgradeToDDC) ValidateBasic() error {
-	//TODO
-	return nil
+	if _, ok := core.Protocol_value[m.Protocol.String()]; !ok {
+		return sdkerrors.Wrap(ErrInvalidProtocol, "protocol not exist")
+	}
+
+	if len(strings.TrimSpace(m.Denom)) == 0 {
+		return sdkerrors.Wrap(ErrInvalidDenom, "denom cannot be empty")
+	}
+
+	_, err := sdk.AccAddressFromBech32(m.Operator)
+	return err
 }
 
 // GetSigners implements Msg.
 func (m MsgUpgradeToDDC) GetSigners() []sdk.AccAddress {
+	addr, _ := sdk.AccAddressFromBech32(m.Operator)
+	return []sdk.AccAddress{addr}
+}
+
+// ValidateBasic implements Msg.
+func (m MsgSetSwitcherStateOfPlatform) ValidateBasic() error {
+	_, err := sdk.AccAddressFromBech32(m.Operator)
+	return err
+}
+
+// GetSigners implements Msg.
+func (m MsgSetSwitcherStateOfPlatform) GetSigners() []sdk.AccAddress {
 	addr, _ := sdk.AccAddressFromBech32(m.Operator)
 	return []sdk.AccAddress{addr}
 }

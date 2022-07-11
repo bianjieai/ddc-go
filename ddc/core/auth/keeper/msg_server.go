@@ -93,8 +93,27 @@ func (k Keeper) AddBatchAccount(goctx context.Context, msg *auth.MsgAddBatchAcco
 // 	- addFunction
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L317
-func (Keeper) AddFunction(context.Context, *auth.MsgAddFunction) (*auth.MsgAddFunctionResponse, error) {
-	panic("unimplemented")
+func (k Keeper) AddFunction(goctx context.Context, msg *auth.MsgAddFunction) (res *auth.MsgAddFunctionResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	account, err := k.GetAccount(ctx, msg.Operator)
+	if err != nil {
+		return nil, err
+	}
+	if account.Role != core.Role_OPERATOR {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "account: %s no access", msg.Operator)
+	}
+
+	if err = k.addFunction(ctx, msg.Role, msg.Protocol, msg.Denom, msg.Function); err != nil {
+		return res, err
+	}
+	ctx.EventManager().EmitTypedEvent(&auth.EventAddFunction{
+		Operator: msg.Operator,
+		Role:     msg.Role,
+		Protocol: msg.Protocol,
+		Denom:    msg.Denom,
+		Function: msg.Function,
+	})
+	return
 }
 
 // ApproveCrossPlatform implements auth.MsgServer
@@ -102,14 +121,26 @@ func (Keeper) AddFunction(context.Context, *auth.MsgAddFunction) (*auth.MsgAddFu
 // 	- crossPlatformApproval
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L373
-func (Keeper) ApproveCrossPlatform(context.Context, *auth.MsgApproveCrossPlatform) (*auth.MsgApproveCrossPlatformResponse, error) {
-	panic("unimplemented")
+func (k Keeper) ApproveCrossPlatform(goctx context.Context, msg *auth.MsgApproveCrossPlatform) (res *auth.MsgApproveCrossPlatformResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	account, err := k.GetAccount(ctx, msg.Operator)
+	if err != nil {
+		return nil, err
+	}
+	if account.Role != core.Role_OPERATOR {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "account: %s no access", msg.Operator)
+	}
+
+	if err := k.approveCrossPlatform(ctx, msg.From, msg.To); err != nil {
+		return nil, err
+	}
+	return
 }
 
 // DeleteAccount implements auth.MsgServer
-func (Keeper) DeleteAccount(context.Context, *auth.MsgDeleteAccount) (*auth.MsgDeleteAccountResponse, error) {
+func (k Keeper) DeleteAccount(goctx context.Context, msg *auth.MsgDeleteAccount) (*auth.MsgDeleteAccountResponse, error) {
 	//TODO
-	return &auth.MsgDeleteAccountResponse{}, nil
+	panic("unimplemented")
 }
 
 // DeleteFunction implements auth.MsgServer
@@ -117,8 +148,27 @@ func (Keeper) DeleteAccount(context.Context, *auth.MsgDeleteAccount) (*auth.MsgD
 // 	- delFunction
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L352
-func (Keeper) DeleteFunction(context.Context, *auth.MsgDeleteFunction) (*auth.MsgDeleteFunctionResponse, error) {
-	panic("unimplemented")
+func (k Keeper) DeleteFunction(goctx context.Context, msg *auth.MsgDeleteFunction) (res *auth.MsgDeleteFunctionResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	account, err := k.GetAccount(ctx, msg.Operator)
+	if err != nil {
+		return nil, err
+	}
+	if account.Role != core.Role_OPERATOR {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "account: %s no access", msg.Operator)
+	}
+
+	if err = k.deleteFunction(ctx, msg.Role, msg.Protocol, msg.Denom, msg.Function); err != nil {
+		return res, err
+	}
+	ctx.EventManager().EmitTypedEvent(&auth.EventDeleteFunction{
+		Operator: msg.Operator,
+		Role:     msg.Role,
+		Protocol: msg.Protocol,
+		Denom:    msg.Denom,
+		Function: msg.Function,
+	})
+	return
 }
 
 // SyncPlatformDID implements auth.MsgServer
@@ -126,8 +176,19 @@ func (Keeper) DeleteFunction(context.Context, *auth.MsgDeleteFunction) (*auth.Ms
 // 	- syncPlatformDID
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L146
-func (Keeper) SyncPlatformDID(context.Context, *auth.MsgSyncPlatformDID) (*auth.MsgSyncPlatformDIDResponse, error) {
-	panic("unimplemented")
+func (k Keeper) SyncPlatformDID(goctx context.Context, msg *auth.MsgSyncPlatformDID) (res *auth.MsgSyncPlatformDIDResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	account, err := k.GetAccount(ctx, msg.Operator)
+	if err != nil {
+		return nil, err
+	}
+	if account.Role != core.Role_OPERATOR {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "account: %s no access", msg.Operator)
+	}
+	for _, did := range msg.DIDs {
+		k.savePlatformDID(ctx, did)
+	}
+	return
 }
 
 // UpdateAccountState implements auth.MsgServer
@@ -135,13 +196,27 @@ func (Keeper) SyncPlatformDID(context.Context, *auth.MsgSyncPlatformDID) (*auth.
 // 	- updateAccountState
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L199
-func (Keeper) UpdateAccountState(context.Context, *auth.MsgUpdateAccountState) (*auth.MsgUpdateAccountStateResponse, error) {
-	panic("unimplemented")
+func (k Keeper) UpdateAccountState(goctx context.Context, msg *auth.MsgUpdateAccountState) (res *auth.MsgUpdateAccountStateResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	if err = k.updateAccountState(ctx, msg.Address,
+		msg.State,
+		msg.ChangePlatformState,
+		msg.Sender,
+	); err != nil {
+		return nil, err
+	}
+	return
 }
 
 // UpgradeToDDC implements auth.MsgServer
-func (Keeper) UpgradeToDDC(context.Context, *auth.MsgUpgradeToDDC) (*auth.MsgUpgradeToDDCResponse, error) {
-	panic("unimplemented")
+func (k Keeper) UpgradeToDDC(goctx context.Context, msg *auth.MsgUpgradeToDDC) (res *auth.MsgUpgradeToDDCResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	if !k.isRoot(ctx, msg.Operator) {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "account: %s no access", msg.Operator)
+	}
+	store := k.prefixStore(ctx)
+	store.Set(ddcKey(msg.Protocol, msg.Denom), Placeholder)
+	return
 }
 
 // SetSwitcherStateOfPlatform implements auth.MsgServer
@@ -149,6 +224,21 @@ func (Keeper) UpgradeToDDC(context.Context, *auth.MsgUpgradeToDDC) (*auth.MsgUpg
 // 	- setSwitcherStateOfPlatform
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Authority/Authority.sol#L133
-func (Keeper) SetSwitcherStateOfPlatform(context.Context, *auth.MsgSetSwitcherStateOfPlatform) (*auth.MsgSetSwitcherStateOfPlatformResponse, error) {
-	panic("unimplemented")
+func (k Keeper) SetSwitcherStateOfPlatform(goctx context.Context, msg *auth.MsgSetSwitcherStateOfPlatform) (res *auth.MsgSetSwitcherStateOfPlatformResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	account, err := k.GetAccount(ctx, msg.Operator)
+	if err != nil {
+		return nil, err
+	}
+	if account.Role != core.Role_OPERATOR {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnauthorized, "account: %s no access", msg.Operator)
+	}
+
+	store := k.prefixStore(ctx)
+	switcherState := store.Has(platformSwitcher())
+	if switcherState == msg.IsOpen {
+		return nil, sdkerrors.Wrapf(auth.ErrInvalidOperator, "invalid operation")
+	}
+	store.Set(platformSwitcher(), Placeholder)
+	return
 }

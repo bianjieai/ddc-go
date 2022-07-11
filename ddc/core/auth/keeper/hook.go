@@ -9,26 +9,46 @@ import (
 var _ exported.Hook = Keeper{}
 
 // BeforeDenomTransfer implements exported.Hook
-func (Keeper) BeforeDenomTransfer(ctx sdk.Context, protocol string, denomID string, sender sdk.AccAddress) error {
-	panic("unimplemented")
+func (k Keeper) BeforeDenomTransfer(ctx sdk.Context, protocol string, denomID string, sender sdk.AccAddress) error {
+	if !k.ControlByDDC(ctx, protocol, denomID) {
+		return nil
+	}
+	//TODO
+	return nil
 }
 
 // BeforeTokenBurn implements exported.Hook
-func (Keeper) BeforeTokenBurn(ctx sdk.Context, protocol string, denomID string, tokenID string, sender sdk.AccAddress) error {
-	panic("unimplemented")
+func (k Keeper) BeforeTokenBurn(ctx sdk.Context, protocol string, denomID string, tokenID string, sender sdk.AccAddress) error {
+	if !k.ControlByDDC(ctx, protocol, denomID) {
+		return nil
+	}
+	//TODO
+	return nil
 }
 
 // BeforeTokenEdit implements exported.Hook
-func (Keeper) BeforeTokenEdit(ctx sdk.Context, protocol string, denomID string, tokenID string, sender sdk.AccAddress) error {
-	panic("unimplemented")
+func (k Keeper) BeforeTokenEdit(ctx sdk.Context, protocol string, denomID string, tokenID string, sender sdk.AccAddress) error {
+	if !k.ControlByDDC(ctx, protocol, denomID) {
+		return nil
+	}
+	//TODO
+	return nil
 }
 
 // BeforeTokenMint implements exported.Hook
-func (Keeper) BeforeTokenMint(ctx sdk.Context, protocol string, denomID string, sender sdk.AccAddress, receiver sdk.AccAddress) error {
-	panic("unimplemented")
+func (k Keeper) BeforeTokenMint(ctx sdk.Context, protocol string, denomID string, sender sdk.AccAddress, receiver sdk.AccAddress) error {
+	if !k.ControlByDDC(ctx, protocol, denomID) {
+		return nil
+	}
+	//TODO
+	return nil
 }
 
 // BeforeTokenTransfer implements exported.Hook
-func (Keeper) BeforeTokenTransfer(ctx sdk.Context, protocol string, denomID string, tokenID string, sender sdk.AccAddress, receiver sdk.AccAddress) error {
-	panic("unimplemented")
+func (k Keeper) BeforeTokenTransfer(ctx sdk.Context, protocol string, denomID string, tokenID string, sender sdk.AccAddress, receiver sdk.AccAddress) error {
+	if !k.ControlByDDC(ctx, protocol, denomID) {
+		return nil
+	}
+	//TODO
+	return nil
 }

@@ -16,7 +16,9 @@ func ParamKeyTable() paramstypes.KeyTable {
 func (k Keeper) GetParams(ctx sdk.Context) auth.Params {
 	var root string
 	k.paramSpace.Get(ctx, auth.KeyRoot, &root)
-	return auth.Params{root}
+	return auth.Params{
+		Root: root,
+	}
 }
 
 // GetRoot return the root
