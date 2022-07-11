@@ -11,7 +11,11 @@ import (
 var _ exported.Hook = Keeper{}
 
 // BeforeDenomTransfer implements exported.Hook
-func (k Keeper) BeforeDenomTransfer(ctx sdk.Context, protocol string, denomID string, sender sdk.AccAddress) error {
+func (k Keeper) BeforeDenomTransfer(ctx sdk.Context,
+	protocol string,
+	denomID string,
+	sender sdk.AccAddress,
+) error {
 	if !k.requireDDC(ctx, protocol, denomID) {
 		return nil
 	}
@@ -21,7 +25,11 @@ func (k Keeper) BeforeDenomTransfer(ctx sdk.Context, protocol string, denomID st
 // BeforeTokenBurn implements exported.Hook
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L429
 func (k Keeper) BeforeTokenBurn(ctx sdk.Context,
-	protocol string, denomID string, tokenID string, sender sdk.AccAddress) error {
+	protocol string,
+	denomID string,
+	tokenID string,
+	sender sdk.AccAddress,
+) error {
 	if !k.requireDDC(ctx, protocol, denomID) {
 		return nil
 	}
@@ -37,7 +45,11 @@ func (k Keeper) BeforeTokenBurn(ctx sdk.Context,
 // BeforeTokenEdit implements exported.Hook
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L208-L209
 func (k Keeper) BeforeTokenEdit(ctx sdk.Context,
-	protocol string, denomID string, tokenID string, sender sdk.AccAddress) error {
+	protocol string,
+	denomID string,
+	tokenID string,
+	sender sdk.AccAddress,
+) error {
 	if !k.requireDDC(ctx, protocol, denomID) {
 		return nil
 	}
@@ -53,7 +65,11 @@ func (k Keeper) BeforeTokenEdit(ctx sdk.Context,
 // BeforeTokenMint implements exported.Hook
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L143-L145
 func (k Keeper) BeforeTokenMint(ctx sdk.Context,
-	protocol string, denomID string, sender sdk.AccAddress, receiver sdk.AccAddress) error {
+	protocol string,
+	denomID string,
+	sender sdk.AccAddress,
+	receiver sdk.AccAddress,
+) error {
 	if !k.requireDDC(ctx, protocol, denomID) {
 		return nil
 	}
@@ -76,7 +92,12 @@ func (k Keeper) BeforeTokenMint(ctx sdk.Context,
 // BeforeTokenTransfer implements exported.Hook
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L366-L368
 func (k Keeper) BeforeTokenTransfer(ctx sdk.Context,
-	protocol string, denomID string, tokenID string, sender sdk.AccAddress, receiver sdk.AccAddress) error {
+	protocol string,
+	denomID string,
+	tokenID string,
+	sender sdk.AccAddress,
+	receiver sdk.AccAddress,
+) error {
 	if !k.requireDDC(ctx, protocol, denomID) {
 		return nil
 	}
