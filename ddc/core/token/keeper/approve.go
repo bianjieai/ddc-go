@@ -32,7 +32,7 @@ func (k Keeper) approve(ctx sdk.Context, denomID, tokenID, operator, to string) 
 	}
 
 	// require operator is owner or is approved for all
-	if operator != owner && !k.isApprovedForAll(ctx, denomID, owner, operator) {
+	if operator != owner && !k.isApprovedForAll(ctx, appendProtocolPrefix(denomID, core.Protocol_NFT), owner, operator) {
 		return sdkerrors.Wrapf(token.ErrInvalidOperator, "approve operator is not owner nor approved for all")
 	}
 
@@ -115,6 +115,12 @@ func (k Keeper) requireApprovalConstraintsDDC1155(ctx sdk.Context, operator stri
 func (k Keeper) isApprovedForAll(ctx sdk.Context, denom, owner, operator string) bool {
 	store := k.prefixStore(ctx)
 	return store.Has(accountApprovalKey(denom, owner, operator))
+}
+
+func (k Keeper) getAccountApproval(ctx sdk.Context, denom, tokenId string) string {
+	store := k.prefixStore(ctx)
+	account := store.Get(ddcApprovalKey(denom, tokenId))
+	return string(account[:])
 }
 
 func (k Keeper) setDDCApprovals(ctx sdk.Context, denom, tokenId, to string) {

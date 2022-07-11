@@ -4,6 +4,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	mtkeeper "github.com/irisnet/irismod/modules/mt/keeper"
+	nftkeeper "github.com/irisnet/irismod/modules/nft/keeper"
 
 	authkeeper "github.com/bianjieai/ddc-go/ddc/core/auth/keeper"
 	feekeeper "github.com/bianjieai/ddc-go/ddc/core/fee/keeper"
@@ -19,12 +21,12 @@ type Keeper struct {
 }
 
 // NewKeeper creates a new nft Keeper instance
-func NewKeeper(cdc codec.Codec, key sdk.StoreKey, paramSpace paramstypes.Subspace) Keeper {
+func NewKeeper(cdc codec.Codec, key sdk.StoreKey, nftKeeper nftkeeper.Keeper, mtKeeper mtkeeper.Keeper, paramSpace paramstypes.Subspace) Keeper {
 	authKeeper := authkeeper.NewKeeper(cdc, key, paramSpace)
 	return Keeper{
 		AuthKeeper:  authKeeper,
 		FeeKeeper:   feekeeper.NewKeeper(cdc, key, authKeeper),
-		TokenKeeper: tokenkeeper.NewKeeper(cdc, key),
+		TokenKeeper: tokenkeeper.NewKeeper(cdc, key, nftKeeper, mtKeeper),
 	}
 }
 
