@@ -5,6 +5,7 @@ import (
 	"github.com/bianjieai/ddc-go/ddc/core/token"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"strings"
 )
 
 // implements: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L224
@@ -117,10 +118,30 @@ func (k Keeper) isApprovedForAll(ctx sdk.Context, denom, owner, operator string)
 	return store.Has(accountApprovalKey(denom, owner, operator))
 }
 
-func (k Keeper) getAccountApproval(ctx sdk.Context, denom, tokenId string) string {
+func (k Keeper) getApprovedAccount(ctx sdk.Context, denom, tokenId string) string {
 	store := k.prefixStore(ctx)
 	account := store.Get(ddcApprovalKey(denom, tokenId))
 	return string(account[:])
+}
+
+func (k Keeper) getApprovedForAll(ctx sdk.Context, denom, owner string) []string {
+	store := k.prefixStore(ctx)
+	prefix := string(AccountApprovalKey[:]) + denom + owner
+
+	iterator := sdk.KVStorePrefixIterator(store, AccountApprovalKey)
+	defer iterator.Close()
+
+	var operators []string
+	for ; iterator.Valid(); iterator.Next() {
+		key := string(iterator.Key()[:])
+		if !strings.HasPrefix(key, prefix) {
+			continue
+		}
+		operator := strings.TrimPrefix(key, prefix)
+		operators = append(operators, operator)
+	}
+
+	return operators
 }
 
 func (k Keeper) setDDCApprovals(ctx sdk.Context, denom, tokenId, to string) {

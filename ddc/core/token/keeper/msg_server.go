@@ -149,6 +149,11 @@ func (k Keeper) Freeze(goctx context.Context, msg *token.MsgFreeze) (res *token.
 }
 
 // Unfreeze implements token.MsgServer
+// implement:
+// - freeze
+// reference:
+// - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L405
+// - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L281
 func (k Keeper) Unfreeze(goctx context.Context, msg *token.MsgUnfreeze) (res *token.MsgUnfreezeResponse, err error) {
 	ctx := sdk.UnwrapSDKContext(goctx)
 

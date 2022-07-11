@@ -23,7 +23,7 @@ func (k Keeper) batchBurnDDC721(ctx sdk.Context, denomID string, tokenIDs []stri
 		// require approved or real owner
 		prefixDenomID := appendProtocolPrefix(denomID, protocol)
 		owner := nft.GetOwner().String()
-		approvee := k.getAccountApproval(ctx, prefixDenomID, tokenIDs[i])
+		approvee := k.getApprovedAccount(ctx, prefixDenomID, tokenIDs[i])
 		approved := k.isApprovedForAll(ctx, prefixDenomID, owner, operator)
 		if operator != owner && operator != approvee && !approved {
 			return sdkerrors.Wrapf(token.ErrInvalidOperator, "operator has no access to burning ddc")
