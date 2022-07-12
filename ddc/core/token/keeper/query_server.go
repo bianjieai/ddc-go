@@ -14,7 +14,9 @@ import (
 var _ token.QueryServer = Keeper{}
 
 // ApprovedForAll implements token.QueryServer
-func (k Keeper) ApprovedForAll(goctx context.Context, req *token.QueryApprovedForAllRequest) (*token.QueryApprovedForAllResponse, error) {
+func (k Keeper) ApprovedForAll(goctx context.Context,
+	req *token.QueryApprovedForAllRequest,
+) (*token.QueryApprovedForAllResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -34,11 +36,14 @@ func (k Keeper) ApprovedForAll(goctx context.Context, req *token.QueryApprovedFo
 
 	ctx := sdk.UnwrapSDKContext(goctx)
 
-	return &token.QueryApprovedForAllResponse{Operator: k.getAccountsApproval(ctx, req.Protocol, req.Owner, req.Denom)}, nil
+	return &token.QueryApprovedForAllResponse{
+		Operator: k.getAccountsApproval(ctx, req.Protocol, req.Owner, req.Denom)}, nil
 }
 
 // TokenApproved implements token.QueryServer
-func (k Keeper) TokenApproved(goctx context.Context, req *token.QueryTokenApprovedRequest) (*token.QueryTokenApprovedResponse, error) {
+func (k Keeper) TokenApproved(goctx context.Context,
+	req *token.QueryTokenApprovedRequest,
+) (*token.QueryTokenApprovedResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
 	}
@@ -53,5 +58,6 @@ func (k Keeper) TokenApproved(goctx context.Context, req *token.QueryTokenApprov
 
 	ctx := sdk.UnwrapSDKContext(goctx)
 
-	return &token.QueryTokenApprovedResponse{Operator: k.getDDCApproval(ctx, core.Protocol_NFT, req.Denom, req.TokenId)}, nil
+	return &token.QueryTokenApprovedResponse{
+		Operator: k.getDDCApproval(ctx, core.Protocol_NFT, req.Denom, req.TokenId)}, nil
 }

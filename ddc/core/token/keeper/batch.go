@@ -8,19 +8,22 @@ import (
 )
 
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L444
-func (k Keeper) batchBurnDDC721(ctx sdk.Context, denomID string, tokenIDs []string, operator string, protocol core.Protocol) error {
+func (k Keeper) batchBurnDDC721(ctx sdk.Context,
+	denomID string,
+	tokenIDs []string,
+	operator string,
+	protocol core.Protocol,
+) error {
 	// TODO
 	// if !k.requireSenderHasFuncPermission() {}
 
 	// NOTE: what if err arises in iteration
 	for i := 0; i <= len(tokenIDs); i++ {
-		// require ddc exist
 		nft, err := k.nftKeeper.GetNFT(ctx, denomID, tokenIDs[i])
 		if err != nil {
 			return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
 		}
 
-		// require approved or real owner
 		owner := nft.GetOwner().String()
 		approvee := k.getDDCApproval(ctx, protocol, denomID, tokenIDs[i])
 		approved := k.isApprovedForAll(ctx, protocol, denomID, owner, operator)
@@ -38,7 +41,12 @@ func (k Keeper) batchBurnDDC721(ctx sdk.Context, denomID string, tokenIDs []stri
 }
 
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L315
-func (k Keeper) batchBurnDDC1155(ctx sdk.Context, denomID string, tokenIDs []string, operator string, protocol core.Protocol) error {
+func (k Keeper) batchBurnDDC1155(ctx sdk.Context,
+	denomID string,
+	tokenIDs []string,
+	operator string,
+	protocol core.Protocol,
+) error {
 	// TODO
 	//if !k.requireSenderHasFuncPermission() {}
 
@@ -58,7 +66,7 @@ func (k Keeper) batchBurnDDC1155(ctx sdk.Context, denomID string, tokenIDs []str
 	}
 
 	for i := 0; i <= len(tokenIDs); i++ {
-		// burn all
+		// NOTE: burn all
 		amount := k.mtKeeper.GetBalance(ctx, denomID, tokenIDs[i], ownerAddr)
 		err := k.mtKeeper.BurnMT(ctx, denomID, tokenIDs[i], amount, ownerAddr)
 		if err != nil {
@@ -70,7 +78,14 @@ func (k Keeper) batchBurnDDC1155(ctx sdk.Context, denomID string, tokenIDs []str
 }
 
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L377
-func (k Keeper) batchTransferDDC721(ctx sdk.Context, denomID string, tokenIDs []string, from, to, sender string, protocol core.Protocol) error {
+func (k Keeper) batchTransferDDC721(ctx sdk.Context,
+	denomID string,
+	tokenIDs []string,
+	from string,
+	to string,
+	sender string,
+	protocol core.Protocol,
+) error {
 
 	// TODO
 	//_requireSenderHasFuncPermission();
@@ -94,11 +109,16 @@ func (k Keeper) batchTransferDDC721(ctx sdk.Context, denomID string, tokenIDs []
 			return err
 		}
 
+		if k.isInBlocklist(ctx, protocol, denomID, tokenIDs[i]) {
+			return sdkerrors.Wrapf(token.ErrDDCBlockList, "ddc is in blocklist")
+		}
+
 		owner := nft.GetOwner().String()
 		if !k.isApprovedForAll(ctx, protocol, denomID, owner, sender) && sender != owner {
 			return sdkerrors.Wrapf(token.ErrInvalidOperator, "operator is not owner nor approved")
 		}
 
+		// NOTE: transfer?
 		err = k.nftKeeper.TransferOwner(ctx, denomID, tokenIDs[i], nft.GetName(), nft.GetURI(), nft.GetURIHash(), nft.GetData(), fromAddr, toAddr)
 		if err != nil {
 			return err
@@ -107,7 +127,16 @@ func (k Keeper) batchTransferDDC721(ctx sdk.Context, denomID string, tokenIDs []
 	return nil
 }
 
-func (k Keeper) batchTransferDDC1155(ctx sdk.Context, denomID string, tokenIDs []string, amounts []uint64, from, to, sender string, protocol core.Protocol) error {
+// implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L250
+func (k Keeper) batchTransferDDC1155(ctx sdk.Context,
+	denomID string,
+	tokenIDs []string,
+	amounts []uint64,
+	from string,
+	to string,
+	sender string,
+	protocol core.Protocol,
+) error {
 	// TODO
 	// requireSenderHasFuncPermission()
 	// requireAvailableDDCAccount(from) & (to)
@@ -132,7 +161,7 @@ func (k Keeper) batchTransferDDC1155(ctx sdk.Context, denomID string, tokenIDs [
 	}
 
 	for i := 0; i <= len(tokenIDs); i++ {
-		err := k.mtKeeper.Transfer(ctx, denomID, tokenIDs[i], amounts[i], fromAddr, toAddr)
+		err := k.mtKeeper.TransferOwner(ctx, denomID, tokenIDs[i], amounts[i], fromAddr, toAddr)
 		if err != nil {
 			return err
 		}

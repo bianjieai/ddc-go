@@ -18,7 +18,11 @@ type Keeper struct {
 }
 
 // NewKeeper creates a new nft Keeper instance
-func NewKeeper(cdc codec.Codec, key sdk.StoreKey, nftKeeper nftkeeper.Keeper, mtKeeper mtkeeper.Keeper) Keeper {
+func NewKeeper(cdc codec.Codec,
+	key sdk.StoreKey,
+	nftKeeper nftkeeper.Keeper,
+	mtKeeper mtkeeper.Keeper,
+) Keeper {
 	return Keeper{
 		cdc:       cdc,
 		storeKey:  key,

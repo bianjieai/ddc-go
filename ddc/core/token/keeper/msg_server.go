@@ -14,7 +14,9 @@ var _ token.MsgServer = Keeper{}
 //  - approve
 // reference:
 //  - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L224
-func (k Keeper) Approve(goctx context.Context, msg *token.MsgApprove) (res *token.MsgApproveResponse, err error) {
+func (k Keeper) Approve(goctx context.Context,
+	msg *token.MsgApprove,
+) (res *token.MsgApproveResponse, err error) {
 	ctx := sdk.UnwrapSDKContext(goctx)
 
 	err = k.approve(ctx, msg.Denom, msg.TokenID, msg.Operator, msg.To)
@@ -38,7 +40,9 @@ func (k Keeper) Approve(goctx context.Context, msg *token.MsgApprove) (res *toke
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L274
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L191
-func (k Keeper) ApproveForAll(goctx context.Context, msg *token.MsgApproveForAll) (res *token.MsgApproveForAllResponse, err error) {
+func (k Keeper) ApproveForAll(goctx context.Context,
+	msg *token.MsgApproveForAll,
+) (res *token.MsgApproveForAllResponse, err error) {
 	ctx := sdk.UnwrapSDKContext(goctx)
 
 	switch msg.Protocol {
@@ -68,7 +72,9 @@ func (k Keeper) ApproveForAll(goctx context.Context, msg *token.MsgApproveForAll
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L444
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L315
-func (k Keeper) BatchBurn(goctx context.Context, msg *token.MsgBatchBurn) (res *token.MsgBatchBurnResponse, err error) {
+func (k Keeper) BatchBurn(goctx context.Context,
+	msg *token.MsgBatchBurn,
+) (res *token.MsgBatchBurnResponse, err error) {
 	ctx := sdk.UnwrapSDKContext(goctx)
 
 	switch msg.Protocol {
@@ -99,7 +105,9 @@ func (k Keeper) BatchBurn(goctx context.Context, msg *token.MsgBatchBurn) (res *
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L250
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L377
-func (k Keeper) BatchTransfer(goctx context.Context, msg *token.MsgBatchTransfer) (res *token.MsgBatchTransferResponse, err error) {
+func (k Keeper) BatchTransfer(goctx context.Context,
+	msg *token.MsgBatchTransfer,
+) (res *token.MsgBatchTransferResponse, err error) {
 	ctx := sdk.UnwrapSDKContext(goctx)
 
 	switch msg.Protocol {
@@ -129,7 +137,9 @@ func (k Keeper) BatchTransfer(goctx context.Context, msg *token.MsgBatchTransfer
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L405
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L281
-func (k Keeper) Freeze(goctx context.Context, msg *token.MsgFreeze) (res *token.MsgFreezeResponse, err error) {
+func (k Keeper) Freeze(goctx context.Context,
+	msg *token.MsgFreeze,
+) (res *token.MsgFreezeResponse, err error) {
 	ctx := sdk.UnwrapSDKContext(goctx)
 
 	switch msg.Protocol {
@@ -154,7 +164,9 @@ func (k Keeper) Freeze(goctx context.Context, msg *token.MsgFreeze) (res *token.
 // reference:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L405
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L281
-func (k Keeper) Unfreeze(goctx context.Context, msg *token.MsgUnfreeze) (res *token.MsgUnfreezeResponse, err error) {
+func (k Keeper) Unfreeze(goctx context.Context,
+	msg *token.MsgUnfreeze,
+) (res *token.MsgUnfreezeResponse, err error) {
 	ctx := sdk.UnwrapSDKContext(goctx)
 
 	switch msg.Protocol {

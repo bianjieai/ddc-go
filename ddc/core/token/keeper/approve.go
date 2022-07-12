@@ -9,8 +9,13 @@ import (
 )
 
 // implements: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L224
-func (k Keeper) approve(ctx sdk.Context, denomID, tokenID, operator, to string) error {
-
+func (k Keeper) approve(ctx sdk.Context,
+	denomID string,
+	tokenID string,
+	operator string,
+	to string,
+) error {
+	// requireApprovalConstraints
 	if !k.requireApprovalConstraintsDDC721(ctx, operator, to) {
 		// TODO
 	}
@@ -19,7 +24,7 @@ func (k Keeper) approve(ctx sdk.Context, denomID, tokenID, operator, to string) 
 	if err != nil {
 		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
 	}
-
+	
 	if k.isInBlocklist(ctx, core.Protocol_NFT, denomID, tokenID) {
 		return sdkerrors.Wrapf(token.ErrDDCBlockList, "ddc is already in blocklist")
 	}
@@ -39,8 +44,12 @@ func (k Keeper) approve(ctx sdk.Context, denomID, tokenID, operator, to string) 
 }
 
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L274
-func (k Keeper) setApproveForAllDDC721(ctx sdk.Context, denomID, sender, operator string, protocol core.Protocol) error {
-
+func (k Keeper) setApproveForAllDDC721(ctx sdk.Context,
+	denomID string,
+	sender string,
+	operator string,
+	protocol core.Protocol,
+) error {
 	if !k.requireApprovalConstraintsDDC721(ctx, operator, operator) {
 		// TODO
 	}
@@ -50,18 +59,27 @@ func (k Keeper) setApproveForAllDDC721(ctx sdk.Context, denomID, sender, operato
 		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "denom is not existent")
 	}
 
-	// NOTE: is Creator the Owner?
+	// NOTE: necessary?
 	if denom.Creator != sender {
-		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender is not the owner")
+		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender it not the owner")
 	}
 
-	k.setAccountApproval(ctx, protocol, denomID, denom.Creator, operator)
+	if operator != sender {
+		return sdkerrors.Wrapf(token.ErrInvalidOperator, "operator should not the sender")
+	}
+
+	k.setAccountApproval(ctx, protocol, denomID, sender, operator)
 
 	return nil
 }
 
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L191
-func (k Keeper) setApproveForAllDDC1155(ctx sdk.Context, denomID, sender, operator string, protocol core.Protocol) error {
+func (k Keeper) setApproveForAllDDC1155(ctx sdk.Context,
+	denomID string,
+	sender string,
+	operator string,
+	protocol core.Protocol,
+) error {
 
 	if !k.requireApprovalConstraintsDDC1155(ctx, operator) {
 		// TODO
@@ -72,8 +90,13 @@ func (k Keeper) setApproveForAllDDC1155(ctx sdk.Context, denomID, sender, operat
 		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "denom is not existent")
 	}
 
+	// NOTE: necessary?
 	if denom.Owner != sender {
 		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender is not the owner")
+	}
+
+	if operator != sender {
+		return sdkerrors.Wrapf(token.ErrInvalidOperator, "operator should not be the sender")
 	}
 
 	k.setAccountApproval(ctx, protocol, denomID, denom.Owner, operator)
@@ -107,23 +130,42 @@ func (k Keeper) requireApprovalConstraintsDDC1155(ctx sdk.Context, operator stri
 // implement:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L288
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L206
-func (k Keeper) isApprovedForAll(ctx sdk.Context, protocol core.Protocol, denomID, owner, operator string) bool {
+func (k Keeper) isApprovedForAll(ctx sdk.Context,
+	protocol core.Protocol,
+	denomID string,
+	owner string,
+	operator string,
+) bool {
 	store := k.prefixStore(ctx)
 	return store.Has(accountApprovalKey(protocol, denomID, owner, operator))
 }
 
-func (k Keeper) setDDCApproval(ctx sdk.Context, protocol core.Protocol, denomID, tokenID, to string) {
+func (k Keeper) setDDCApproval(ctx sdk.Context,
+	protocol core.Protocol,
+	denomID string,
+	tokenID string,
+	to string,
+) {
 	store := k.prefixStore(ctx)
 	store.Set(ddcApprovalKey(protocol, denomID, tokenID), []byte(to))
 }
 
-func (k Keeper) getDDCApproval(ctx sdk.Context, protocol core.Protocol, denomID, tokenId string) string {
+func (k Keeper) getDDCApproval(ctx sdk.Context,
+	protocol core.Protocol,
+	denomID string,
+	tokenId string,
+) string {
 	store := k.prefixStore(ctx)
 	to := store.Get(ddcApprovalKey(protocol, denomID, tokenId))
 	return string(to[:])
 }
 
-func (k Keeper) setAccountApproval(ctx sdk.Context, protocol core.Protocol, denomID, owner, operator string) {
+func (k Keeper) setAccountApproval(ctx sdk.Context,
+	protocol core.Protocol,
+	denomID string,
+	owner string,
+	operator string,
+) {
 	store := k.prefixStore(ctx)
 	key := accountApprovalKey(protocol, denomID, owner, operator)
 	if store.Has(key) {
@@ -132,7 +174,11 @@ func (k Keeper) setAccountApproval(ctx sdk.Context, protocol core.Protocol, deno
 	store.Set(key, Placeholder)
 }
 
-func (k Keeper) getAccountsApproval(ctx sdk.Context, protocol core.Protocol, denomID, owner string) []string {
+func (k Keeper) getAccountsApproval(ctx sdk.Context,
+	protocol core.Protocol,
+	denomID string,
+	owner string,
+) []string {
 	store := k.prefixStore(ctx)
 	prefix := string(accountApprovalKey(protocol, denomID, owner, "")[:])
 

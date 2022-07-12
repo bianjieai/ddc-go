@@ -19,7 +19,10 @@ const (
 )
 
 // DDCApprovalKey/Protocol/DenomID/TokenID
-func ddcApprovalKey(protocol core.Protocol, denomID, tokenID string) []byte {
+func ddcApprovalKey(protocol core.Protocol,
+	denomID string,
+	tokenID string,
+) []byte {
 	pbz := sdk.Uint64ToBigEndian(uint64(protocol))
 	dbz := []byte(denomID)
 	tbz := []byte(tokenID)
@@ -35,7 +38,11 @@ func ddcApprovalKey(protocol core.Protocol, denomID, tokenID string) []byte {
 }
 
 // AccountApprovalKey/Protocol/DenomID/Owner/Operator
-func accountApprovalKey(protocol core.Protocol, denomID, owner, operator string) []byte {
+func accountApprovalKey(protocol core.Protocol,
+	denomID string,
+	owner string,
+	operator string,
+) []byte {
 	pbz := sdk.Uint64ToBigEndian(uint64(protocol))
 	dbz := []byte(denomID)
 	owbz := []byte(owner)
@@ -53,7 +60,10 @@ func accountApprovalKey(protocol core.Protocol, denomID, owner, operator string)
 }
 
 // TokenBlockListKey/Protocol/DenomID/TokenID
-func tokenBlocklistKey(protocol core.Protocol, denomID, tokenID string) []byte {
+func tokenBlocklistKey(protocol core.Protocol,
+	denomID string,
+	tokenID string,
+) []byte {
 	pbz := sdk.Uint64ToBigEndian(uint64(protocol))
 	dbz := []byte(denomID)
 	tbz := []byte(tokenID)
