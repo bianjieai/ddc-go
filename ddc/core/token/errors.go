@@ -15,4 +15,5 @@ var (
 	ErrInconsistentLength = sdkerrors.Register("ddc", 47, "inconsistent length")
 	ErrNonExistentDDC     = sdkerrors.Register("ddc", 48, "DDC is not existent")
 	ErrDDCBlockList       = sdkerrors.Register("ddc", 49, "DDC blocklist error")
+	ErrRequireNotMet      = sdkerrors.Register("ddc", 50, "Requirement is noe met")
 )

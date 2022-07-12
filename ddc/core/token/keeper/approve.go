@@ -24,7 +24,7 @@ func (k Keeper) approve(ctx sdk.Context,
 	if err != nil {
 		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
 	}
-	
+
 	if k.isInBlocklist(ctx, core.Protocol_NFT, denomID, tokenID) {
 		return sdkerrors.Wrapf(token.ErrDDCBlockList, "ddc is already in blocklist")
 	}
@@ -61,7 +61,7 @@ func (k Keeper) setApproveForAllDDC721(ctx sdk.Context,
 
 	// NOTE: necessary?
 	if denom.Creator != sender {
-		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender it not the owner")
+		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender is not the owner")
 	}
 
 	if operator != sender {
@@ -153,10 +153,10 @@ func (k Keeper) setDDCApproval(ctx sdk.Context,
 func (k Keeper) getDDCApproval(ctx sdk.Context,
 	protocol core.Protocol,
 	denomID string,
-	tokenId string,
+	tokenID string,
 ) string {
 	store := k.prefixStore(ctx)
-	to := store.Get(ddcApprovalKey(protocol, denomID, tokenId))
+	to := store.Get(ddcApprovalKey(protocol, denomID, tokenID))
 	return string(to[:])
 }
 
