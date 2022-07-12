@@ -30,7 +30,7 @@ func (k Keeper) prefixStore(ctx sdk.Context) prefix.Store {
 	return prefix.NewStore(store, []byte(SubModule))
 }
 
-func (k Keeper) ControlByDDC(ctx sdk.Context, protocol string, denomID string) bool {
+func (k Keeper) requireDDC(ctx sdk.Context, protocol string, denomID string) bool {
 	v, ok := core.Protocol_value[protocol]
 	if !ok {
 		return false
