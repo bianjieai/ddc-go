@@ -34,7 +34,7 @@ func (k Keeper) ApprovedForAll(goctx context.Context, req *token.QueryApprovedFo
 
 	ctx := sdk.UnwrapSDKContext(goctx)
 
-	return &token.QueryApprovedForAllResponse{Operator: k.getApprovedForAll(ctx, req.Owner, req.Denom)}, nil
+	return &token.QueryApprovedForAllResponse{Operator: k.getAccountsApproval(ctx, req.Protocol, req.Owner, req.Denom)}, nil
 }
 
 // TokenApproved implements token.QueryServer
@@ -53,5 +53,5 @@ func (k Keeper) TokenApproved(goctx context.Context, req *token.QueryTokenApprov
 
 	ctx := sdk.UnwrapSDKContext(goctx)
 
-	return &token.QueryTokenApprovedResponse{Operator: k.getApprovedAccount(ctx, appendProtocolPrefix(req.Denom, core.Protocol_NFT), req.TokenId)}, nil
+	return &token.QueryTokenApprovedResponse{Operator: k.getDDCApproval(ctx, core.Protocol_NFT, req.Denom, req.TokenId)}, nil
 }

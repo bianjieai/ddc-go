@@ -21,10 +21,9 @@ func (k Keeper) batchBurnDDC721(ctx sdk.Context, denomID string, tokenIDs []stri
 		}
 
 		// require approved or real owner
-		prefixDenomID := appendProtocolPrefix(denomID, protocol)
 		owner := nft.GetOwner().String()
-		approvee := k.getApprovedAccount(ctx, prefixDenomID, tokenIDs[i])
-		approved := k.isApprovedForAll(ctx, prefixDenomID, owner, operator)
+		approvee := k.getDDCApproval(ctx, protocol, denomID, tokenIDs[i])
+		approved := k.isApprovedForAll(ctx, protocol, denomID, owner, operator)
 		if operator != owner && operator != approvee && !approved {
 			return sdkerrors.Wrapf(token.ErrInvalidOperator, "operator has no access to burning ddc")
 		}
@@ -49,7 +48,7 @@ func (k Keeper) batchBurnDDC1155(ctx sdk.Context, denomID string, tokenIDs []str
 	}
 
 	owner := denom.Owner
-	if !k.isApprovedForAll(ctx, appendProtocolPrefix(denomID, protocol), owner, operator) && operator != owner {
+	if !k.isApprovedForAll(ctx, protocol, denomID, owner, operator) && operator != owner {
 		return sdkerrors.Wrapf(token.ErrInvalidOperator, "operator is not owner nor approved")
 	}
 
@@ -96,7 +95,7 @@ func (k Keeper) batchTransferDDC721(ctx sdk.Context, denomID string, tokenIDs []
 		}
 
 		owner := nft.GetOwner().String()
-		if !k.isApprovedForAll(ctx, appendProtocolPrefix(denomID, protocol), owner, sender) && sender != owner {
+		if !k.isApprovedForAll(ctx, protocol, denomID, owner, sender) && sender != owner {
 			return sdkerrors.Wrapf(token.ErrInvalidOperator, "operator is not owner nor approved")
 		}
 
@@ -119,7 +118,7 @@ func (k Keeper) batchTransferDDC1155(ctx sdk.Context, denomID string, tokenIDs [
 		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "denom is not existent")
 	}
 	owner := denom.Owner
-	if !k.isApprovedForAll(ctx, appendProtocolPrefix(denomID, protocol), owner, sender) && sender != owner {
+	if !k.isApprovedForAll(ctx, protocol, denomID, owner, sender) && sender != owner {
 		return sdkerrors.Wrapf(token.ErrInvalidOperator, "operator is not owner nor approved")
 	}
 

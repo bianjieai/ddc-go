@@ -15,29 +15,25 @@ func (k Keeper) approve(ctx sdk.Context, denomID, tokenID, operator, to string) 
 		// TODO
 	}
 
-	// require nft exists
 	nft, err := k.nftKeeper.GetNFT(ctx, denomID, tokenID)
 	if err != nil {
 		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
 	}
 
-	// require nft not in blocklist
-	if k.isInBlocklist(ctx, appendProtocolPrefix(denomID, core.Protocol_NFT), tokenID) {
+	if k.isInBlocklist(ctx, core.Protocol_NFT, denomID, tokenID) {
 		return sdkerrors.Wrapf(token.ErrDDCBlockList, "ddc is already in blocklist")
 	}
 
-	// require not approving to owner
 	owner := nft.GetOwner().String()
 	if owner == to {
 		return sdkerrors.Wrapf(token.ErrInvalidApprovee, "cannot approve to owner")
 	}
 
-	// require operator is owner or is approved for all
-	if operator != owner && !k.isApprovedForAll(ctx, appendProtocolPrefix(denomID, core.Protocol_NFT), owner, operator) {
+	if operator != owner && !k.isApprovedForAll(ctx, core.Protocol_NFT, denomID, owner, operator) {
 		return sdkerrors.Wrapf(token.ErrInvalidOperator, "approve operator is not owner nor approved for all")
 	}
 
-	k.setDDCApprovals(ctx, appendProtocolPrefix(denomID, core.Protocol_NFT), tokenID, to)
+	k.setDDCApproval(ctx, core.Protocol_NFT, denomID, tokenID, to)
 
 	return nil
 }
@@ -59,7 +55,7 @@ func (k Keeper) setApproveForAllDDC721(ctx sdk.Context, denomID, sender, operato
 		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender is not the owner")
 	}
 
-	k.setAccountApprovalKey(ctx, appendProtocolPrefix(denomID, protocol), denom.Creator, operator)
+	k.setAccountApproval(ctx, protocol, denomID, denom.Creator, operator)
 
 	return nil
 }
@@ -71,18 +67,16 @@ func (k Keeper) setApproveForAllDDC1155(ctx sdk.Context, denomID, sender, operat
 		// TODO
 	}
 
-	// require mt denom exists
 	denom, exist := k.mtKeeper.GetDenom(ctx, denomID)
 	if !exist {
 		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "denom is not existent")
 	}
 
-	// require sender is not owner
 	if denom.Owner != sender {
 		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender is not the owner")
 	}
 
-	k.setAccountApprovalKey(ctx, appendProtocolPrefix(denomID, protocol), denom.Owner, operator)
+	k.setAccountApproval(ctx, protocol, denomID, denom.Owner, operator)
 
 	return nil
 }
@@ -113,20 +107,34 @@ func (k Keeper) requireApprovalConstraintsDDC1155(ctx sdk.Context, operator stri
 // implement:
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L288
 // - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L206
-func (k Keeper) isApprovedForAll(ctx sdk.Context, denom, owner, operator string) bool {
+func (k Keeper) isApprovedForAll(ctx sdk.Context, protocol core.Protocol, denomID, owner, operator string) bool {
 	store := k.prefixStore(ctx)
-	return store.Has(accountApprovalKey(denom, owner, operator))
+	return store.Has(accountApprovalKey(protocol, denomID, owner, operator))
 }
 
-func (k Keeper) getApprovedAccount(ctx sdk.Context, denom, tokenId string) string {
+func (k Keeper) setDDCApproval(ctx sdk.Context, protocol core.Protocol, denomID, tokenID, to string) {
 	store := k.prefixStore(ctx)
-	account := store.Get(ddcApprovalKey(denom, tokenId))
-	return string(account[:])
+	store.Set(ddcApprovalKey(protocol, denomID, tokenID), []byte(to))
 }
 
-func (k Keeper) getApprovedForAll(ctx sdk.Context, denom, owner string) []string {
+func (k Keeper) getDDCApproval(ctx sdk.Context, protocol core.Protocol, denomID, tokenId string) string {
 	store := k.prefixStore(ctx)
-	prefix := string(AccountApprovalKey[:]) + denom + owner
+	to := store.Get(ddcApprovalKey(protocol, denomID, tokenId))
+	return string(to[:])
+}
+
+func (k Keeper) setAccountApproval(ctx sdk.Context, protocol core.Protocol, denomID, owner, operator string) {
+	store := k.prefixStore(ctx)
+	key := accountApprovalKey(protocol, denomID, owner, operator)
+	if store.Has(key) {
+		return
+	}
+	store.Set(key, Placeholder)
+}
+
+func (k Keeper) getAccountsApproval(ctx sdk.Context, protocol core.Protocol, denomID, owner string) []string {
+	store := k.prefixStore(ctx)
+	prefix := string(accountApprovalKey(protocol, denomID, owner, "")[:])
 
 	iterator := sdk.KVStorePrefixIterator(store, AccountApprovalKey)
 	defer iterator.Close()
@@ -134,25 +142,10 @@ func (k Keeper) getApprovedForAll(ctx sdk.Context, denom, owner string) []string
 	var operators []string
 	for ; iterator.Valid(); iterator.Next() {
 		key := string(iterator.Key()[:])
-		if !strings.HasPrefix(key, prefix) {
-			continue
+		if strings.HasPrefix(key, prefix) {
+			operator := strings.TrimPrefix(key, prefix)
+			operators = append(operators, operator)
 		}
-		operator := strings.TrimPrefix(key, prefix)
-		operators = append(operators, operator)
 	}
-
 	return operators
-}
-
-func (k Keeper) setDDCApprovals(ctx sdk.Context, denom, tokenId, to string) {
-	store := k.prefixStore(ctx)
-	store.Set(ddcApprovalKey(denom, tokenId), []byte(to))
-}
-
-func (k Keeper) setAccountApprovalKey(ctx sdk.Context, denom, owner, operator string) {
-	store := k.prefixStore(ctx)
-	if store.Has(accountApprovalKey(denom, owner, operator)) {
-		return
-	}
-	store.Set(accountApprovalKey(denom, owner, operator), []byte{0x01})
 }

@@ -18,11 +18,11 @@ func (k Keeper) freezeDDC721(ctx sdk.Context, denomID, tokenID, operator string,
 		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
 	}
 
-	if k.isInBlocklist(ctx, appendProtocolPrefix(denomID, protocol), tokenID) {
+	if k.isInBlocklist(ctx, protocol, denomID, tokenID) {
 		return sdkerrors.Wrapf(token.ErrDDCBlockList, "ddc is already in blocklist")
 	}
 
-	k.setTokenBlocklistKey(ctx, appendProtocolPrefix(denomID, protocol), tokenID)
+	k.setTokenBlocklist(ctx, protocol, denomID, tokenID)
 
 	return nil
 }
@@ -38,11 +38,11 @@ func (k Keeper) freezeDDC1155(ctx sdk.Context, denomID, tokenID, operator string
 		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
 	}
 
-	if k.isInBlocklist(ctx, denomID, tokenID) {
+	if k.isInBlocklist(ctx, protocol, denomID, tokenID) {
 		return sdkerrors.Wrapf(token.ErrDDCBlockList, "ddc is already in blocklist")
 	}
 
-	k.setTokenBlocklistKey(ctx, appendProtocolPrefix(denomID, protocol), tokenID)
+	k.setTokenBlocklist(ctx, protocol, denomID, tokenID)
 
 	return nil
 }
@@ -58,11 +58,11 @@ func (k Keeper) unfreezeDDC721(ctx sdk.Context, denomID, tokenID, operator strin
 		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
 	}
 
-	if !k.isInBlocklist(ctx, appendProtocolPrefix(denomID, protocol), tokenID) {
+	if !k.isInBlocklist(ctx, protocol, denomID, tokenID) {
 		return sdkerrors.Wrapf(token.ErrDDCBlockList, "ddc is not in blocklist")
 	}
 
-	k.unsetTokenBlocklistKey(ctx, appendProtocolPrefix(denomID, protocol), tokenID)
+	k.unsetTokenBlocklist(ctx, protocol, denomID, tokenID)
 
 	return nil
 }
@@ -78,34 +78,32 @@ func (k Keeper) unfreezeDDC1155(ctx sdk.Context, denomID, tokenID, operator stri
 		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
 	}
 
-	if !k.isInBlocklist(ctx, appendProtocolPrefix(denomID, protocol), tokenID) {
+	if !k.isInBlocklist(ctx, protocol, denomID, tokenID) {
 		return sdkerrors.Wrapf(token.ErrDDCBlockList, "ddc is not in blocklist")
 	}
 
-	k.unsetTokenBlocklistKey(ctx, appendProtocolPrefix(denomID, protocol), tokenID)
+	k.unsetTokenBlocklist(ctx, protocol, denomID, tokenID)
 
 	return nil
 }
 
-func (k Keeper) isInBlocklist(ctx sdk.Context, denom, tokenID string) bool {
+func (k Keeper) isInBlocklist(ctx sdk.Context, protocol core.Protocol, denomID, tokenID string) bool {
 	store := k.prefixStore(ctx)
-	return store.Has(tokenBlocklistKey(denom, tokenID))
+	return store.Has(tokenBlocklistKey(protocol, denomID, tokenID))
 }
 
-// setTokenBlocklistKey add a blocklist key which hasn't been set
-func (k Keeper) setTokenBlocklistKey(ctx sdk.Context, denom, tokenID string) {
+func (k Keeper) setTokenBlocklist(ctx sdk.Context, protocol core.Protocol, denomID, tokenID string) {
 	store := k.prefixStore(ctx)
-	if store.Has(tokenBlocklistKey(denom, tokenID)) {
-		return
+	key := tokenBlocklistKey(protocol, denomID, tokenID)
+	if !store.Has(key) {
+		store.Set(key, Placeholder)
 	}
-	store.Set(tokenBlocklistKey(denom, tokenID), []byte{0x01})
 }
 
-// unsetTokenBlocklistKey remove a blocklist key which has already been set
-func (k Keeper) unsetTokenBlocklistKey(ctx sdk.Context, denom, tokenID string) {
+func (k Keeper) unsetTokenBlocklist(ctx sdk.Context, protocol core.Protocol, denomID, tokenID string) {
 	store := k.prefixStore(ctx)
-	if !store.Has(tokenBlocklistKey(denom, tokenID)) {
-		return
+	key := tokenBlocklistKey(protocol, denomID, tokenID)
+	if store.Has(key) {
+		store.Delete(key)
 	}
-	store.Delete(tokenBlocklistKey(denom, tokenID))
 }
