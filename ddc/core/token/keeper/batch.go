@@ -14,27 +14,35 @@ func (k Keeper) batchBurnDDC721(ctx sdk.Context,
 	operator string,
 	protocol core.Protocol,
 ) error {
-	// TODO
-	// if !k.requireSenderHasFuncPermission() {}
+	// TODO: auth
+	// requireSenderHasFuncPermission
 
-	// NOTE: what if err arises in iteration
 	for i := 0; i <= len(tokenIDs); i++ {
+		if err := k.requireExistsAndApproved(ctx, core.Protocol_name[int32(protocol)], denomID, tokenIDs[i], operator); err != nil {
+			return err
+		}
+
 		nft, err := k.nftKeeper.GetNFT(ctx, denomID, tokenIDs[i])
-		if err != nil {
-			return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
-		}
-
-		owner := nft.GetOwner().String()
-		approvee := k.getDDCApproval(ctx, protocol, denomID, tokenIDs[i])
-		approved := k.isApprovedForAll(ctx, protocol, denomID, owner, operator)
-		if operator != owner && operator != approvee && !approved {
-			return sdkerrors.Wrapf(token.ErrInvalidOperator, "operator has no access to burning ddc")
-		}
-
-		err = k.nftKeeper.BurnNFT(ctx, denomID, tokenIDs[i], nft.GetOwner())
 		if err != nil {
 			return err
 		}
+
+		owner := nft.GetOwner().String()
+		if operator != owner {
+			return sdkerrors.Wrapf(token.ErrInvalidOwner, "operator is not the owner")
+		}
+
+		ownerAddr, err := sdk.AccAddressFromBech32(owner)
+		if err != nil {
+			return err
+		}
+
+		err = k.nftKeeper.BurnNFT(ctx, denomID, tokenIDs[i], ownerAddr)
+		if err != nil {
+			return err
+		}
+
+		// TODO: clear approvals
 	}
 
 	return nil
@@ -47,19 +55,15 @@ func (k Keeper) batchBurnDDC1155(ctx sdk.Context,
 	operator string,
 	protocol core.Protocol,
 ) error {
-	// TODO
-	//if !k.requireSenderHasFuncPermission() {}
+	// TODO: auth
+	// requireSenderHasFuncPermission()
 
-	denom, exist := k.mtKeeper.GetDenom(ctx, denomID)
-	if !exist {
-		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "denom is not existent")
+	if err := k.requireApprovedOrOwner(ctx, core.Protocol_name[int32(protocol)], denomID, "", operator); err != nil {
+		return err
 	}
 
-	owner := denom.Owner
-	if !k.isApprovedForAll(ctx, protocol, denomID, owner, operator) && operator != owner {
-		return sdkerrors.Wrapf(token.ErrInvalidOperator, "operator is not owner nor approved")
-	}
-
+	// TODO: getting owner of MT?
+	var owner string
 	ownerAddr, err := sdk.AccAddressFromBech32(owner)
 	if err != nil {
 		return err
@@ -72,6 +76,8 @@ func (k Keeper) batchBurnDDC1155(ctx sdk.Context,
 		if err != nil {
 			return err
 		}
+
+		// TODO: deleted in blocklist
 	}
 
 	return nil
@@ -87,11 +93,8 @@ func (k Keeper) batchTransferDDC721(ctx sdk.Context,
 	protocol core.Protocol,
 ) error {
 
-	// TODO
-	//_requireSenderHasFuncPermission();
-	//_requireAvailableDDCAccount(from);
-	//_requireAvailableDDCAccount(to);
-	//_requireOnePlatformOrCrossPlatformApproval(from, to);
+	// TODO: auth
+	// _requireTransferConstraints_FistStep
 
 	fromAddr, err := sdk.AccAddressFromBech32(from)
 	if err != nil {
@@ -103,22 +106,15 @@ func (k Keeper) batchTransferDDC721(ctx sdk.Context,
 	}
 
 	for i := 0; i <= len(tokenIDs); i++ {
+		if err := k.requireTransferConstraintsSecondStep(ctx, core.Protocol_name[int32(protocol)], denomID, tokenIDs[i], sender); err != nil {
+			return err
+		}
 
 		nft, err := k.nftKeeper.GetNFT(ctx, denomID, tokenIDs[i])
 		if err != nil {
 			return err
 		}
 
-		if k.isInBlocklist(ctx, protocol, denomID, tokenIDs[i]) {
-			return sdkerrors.Wrapf(token.ErrDDCBlockList, "ddc is in blocklist")
-		}
-
-		owner := nft.GetOwner().String()
-		if !k.isApprovedForAll(ctx, protocol, denomID, owner, sender) && sender != owner {
-			return sdkerrors.Wrapf(token.ErrInvalidOperator, "operator is not owner nor approved")
-		}
-
-		// NOTE: transfer?
 		err = k.nftKeeper.TransferOwner(ctx, denomID, tokenIDs[i], nft.GetName(), nft.GetURI(), nft.GetURIHash(), nft.GetData(), fromAddr, toAddr)
 		if err != nil {
 			return err
@@ -142,13 +138,8 @@ func (k Keeper) batchTransferDDC1155(ctx sdk.Context,
 	// requireAvailableDDCAccount(from) & (to)
 	// requireOnePlatformOrCrossPlatformApproval()
 
-	denom, exist := k.mtKeeper.GetDenom(ctx, denomID)
-	if !exist {
-		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "denom is not existent")
-	}
-	owner := denom.Owner
-	if !k.isApprovedForAll(ctx, protocol, denomID, owner, sender) && sender != owner {
-		return sdkerrors.Wrapf(token.ErrInvalidOperator, "operator is not owner nor approved")
+	if err := k.requireApprovedOrOwner(ctx, core.Protocol_name[int32(protocol)], denomID, "", sender); err != nil {
+		return err
 	}
 
 	fromAddr, err := sdk.AccAddressFromBech32(from)

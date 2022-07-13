@@ -18,13 +18,8 @@ func (k Keeper) freezeDDC721(ctx sdk.Context,
 	// if !requireSenderHasFuncPermission()
 	// if !requireOperator()
 
-	_, err := k.nftKeeper.GetNFT(ctx, denomID, tokenID)
-	if err != nil {
-		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
-	}
-
-	if k.isInBlocklist(ctx, protocol, denomID, tokenID) {
-		return sdkerrors.Wrapf(token.ErrDDCBlockList, "ddc is already in blocklist")
+	if err := k.requireDisabledDDC(ctx, core.Protocol_name[int32(protocol)], denomID, tokenID); err != nil {
+		return err
 	}
 
 	k.setTokenBlocklist(ctx, protocol, denomID, tokenID)
@@ -43,13 +38,8 @@ func (k Keeper) freezeDDC1155(ctx sdk.Context,
 	// if !requireSenderHasFuncPermission()
 	// if !requireOperator()
 
-	_, err := k.mtKeeper.GetMT(ctx, denomID, tokenID)
-	if err != nil {
-		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
-	}
-
-	if k.isInBlocklist(ctx, protocol, denomID, tokenID) {
-		return sdkerrors.Wrapf(token.ErrDDCBlockList, "ddc is already in blocklist")
+	if err := k.requireAvailableDDC(ctx, core.Protocol_name[int32(protocol)], denomID, tokenID); err != nil {
+		return err
 	}
 
 	k.setTokenBlocklist(ctx, protocol, denomID, tokenID)
@@ -67,10 +57,8 @@ func (k Keeper) unfreezeDDC721(ctx sdk.Context,
 	// TODO
 	// if !requireSenderHasFuncPermission()
 	// if !requireOperator()
-
-	_, err := k.nftKeeper.GetNFT(ctx, denomID, tokenID)
-	if err != nil {
-		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
+	if err := k.requireDisabledDDC(ctx, core.Protocol_name[int32(protocol)], denomID, tokenID); err != nil {
+		return err
 	}
 
 	if !k.isInBlocklist(ctx, protocol, denomID, tokenID) {
@@ -93,13 +81,8 @@ func (k Keeper) unfreezeDDC1155(ctx sdk.Context,
 	// if !requireSenderHasFuncPermission()
 	// if !requireOperator()
 
-	_, err := k.mtKeeper.GetMT(ctx, denomID, tokenID)
-	if err != nil {
-		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
-	}
-
-	if !k.isInBlocklist(ctx, protocol, denomID, tokenID) {
-		return sdkerrors.Wrapf(token.ErrDDCBlockList, "ddc is not in blocklist")
+	if err := k.requireDisabledDDC(ctx, core.Protocol_name[int32(protocol)], denomID, tokenID); err != nil {
+		return err
 	}
 
 	k.unsetTokenBlocklist(ctx, protocol, denomID, tokenID)

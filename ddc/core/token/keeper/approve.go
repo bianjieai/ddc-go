@@ -15,18 +15,17 @@ func (k Keeper) approve(ctx sdk.Context,
 	operator string,
 	to string,
 ) error {
-	// requireApprovalConstraints
-	if !k.requireApprovalConstraintsDDC721(ctx, operator, to) {
-		// TODO
+	if err := k.requireApprovalConstraints(ctx, operator, operator); err != nil {
+		return err
+	}
+
+	if err := k.requireAvailableDDC(ctx, "NFT", denomID, tokenID); err != nil {
+		return err
 	}
 
 	nft, err := k.nftKeeper.GetNFT(ctx, denomID, tokenID)
 	if err != nil {
-		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "ddc is not existent")
-	}
-
-	if k.isInBlocklist(ctx, core.Protocol_NFT, denomID, tokenID) {
-		return sdkerrors.Wrapf(token.ErrDDCBlockList, "ddc is already in blocklist")
+		return err
 	}
 
 	owner := nft.GetOwner().String()
@@ -50,21 +49,11 @@ func (k Keeper) setApproveForAllDDC721(ctx sdk.Context,
 	operator string,
 	protocol core.Protocol,
 ) error {
-	if !k.requireApprovalConstraintsDDC721(ctx, operator, operator) {
-		// TODO
+	if err := k.requireApprovalConstraints(ctx, operator, operator); err != nil {
+		return err
 	}
 
-	denom, exist := k.nftKeeper.GetDenom(ctx, denomID)
-	if !exist {
-		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "denom is not existent")
-	}
-
-	// NOTE: necessary?
-	if denom.Creator != sender {
-		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender is not the owner")
-	}
-
-	if operator != sender {
+	if operator == sender {
 		return sdkerrors.Wrapf(token.ErrInvalidOperator, "operator should not the sender")
 	}
 
@@ -81,50 +70,18 @@ func (k Keeper) setApproveForAllDDC1155(ctx sdk.Context,
 	protocol core.Protocol,
 ) error {
 
-	if !k.requireApprovalConstraintsDDC1155(ctx, operator) {
-		// TODO
-	}
+	// TODO: auth
+	// requireSenderHasFuncPermission
+	// requireAvailableDDCAccount
+	// requireOnePlatform
 
-	denom, exist := k.mtKeeper.GetDenom(ctx, denomID)
-	if !exist {
-		return sdkerrors.Wrapf(token.ErrNonExistentDDC, "denom is not existent")
-	}
-
-	// NOTE: necessary?
-	if denom.Owner != sender {
-		return sdkerrors.Wrapf(token.ErrInvalidOwner, "sender is not the owner")
-	}
-
-	if operator != sender {
+	if operator == sender {
 		return sdkerrors.Wrapf(token.ErrInvalidOperator, "operator should not be the sender")
 	}
 
-	k.setAccountApproval(ctx, protocol, denomID, denom.Owner, operator)
+	k.setAccountApproval(ctx, protocol, denomID, sender, operator)
 
 	return nil
-}
-
-// implement:  https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L245
-func (k Keeper) requireApprovalConstraintsDDC721(ctx sdk.Context, operator, to string) bool {
-	// TODO
-	// if !k.requireSenderHasFuncPermission() {}
-	// if !k.requireAvailableDDCAccount() {}
-	// if !k.requireOnePlatform() {}
-
-	return true
-}
-
-// implement:
-// - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L569
-// - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L586
-// - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L621
-func (k Keeper) requireApprovalConstraintsDDC1155(ctx sdk.Context, operator string) bool {
-	// TODO
-	// if !k.requireSenderHasFuncPermission() {}
-	// if !k.requireAvailableDDCAccount() {}
-	// if !k.requireOnePlatform() {}
-
-	return true
 }
 
 // implement:

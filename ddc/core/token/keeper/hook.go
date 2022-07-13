@@ -72,7 +72,7 @@ func (k Keeper) BeforeTokenTransfer(ctx sdk.Context,
 	tokenID string,
 	sender sdk.AccAddress,
 	receiver sdk.AccAddress) error {
-	if err := k.requireTransferConstraintsSecondStep(ctx, protocol, denomID, tokenID, sender.String(), receiver.String()); err != nil {
+	if err := k.requireTransferConstraintsSecondStep(ctx, protocol, denomID, tokenID, sender.String()); err != nil {
 		return err
 	}
 	return nil
