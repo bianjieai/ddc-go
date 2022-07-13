@@ -7,6 +7,10 @@ import (
 	"github.com/bianjieai/ddc-go/ddc/core"
 )
 
+func (k Keeper) requireOperator(ctx sdk.Context, sender string) error {
+	return k.authKeeper.CheckAvailableAndRole(ctx, sender, core.Role_OPERATOR)
+}
+
 func (k Keeper) checkRechargeAuth(ctx sdk.Context, from, to string, amount uint64) error {
 	fromAcc, err := k.authKeeper.GetAccount(ctx, from)
 	if err != nil {

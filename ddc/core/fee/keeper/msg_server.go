@@ -5,7 +5,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/bianjieai/ddc-go/ddc/core"
 	"github.com/bianjieai/ddc-go/ddc/core/fee"
 )
 
@@ -16,10 +15,9 @@ var _ fee.MsgServer = Keeper{}
 func (k Keeper) DeleteFeeRule(goctx context.Context, msg *fee.MsgDeleteFeeRule) (res *fee.MsgDeleteFeeRuleResponse, err error) {
 	ctx := sdk.UnwrapSDKContext(goctx)
 	if err = k.requireOperator(ctx, msg.Operator); err != nil {
-		return
+		return res, err
 	}
-	store := k.prefixStore(ctx)
-	store.Delete(feeRuleKey(msg.Protocol, msg.Denom, msg.Function))
+	k.deleteFee(ctx, msg.Protocol, msg.Denom, msg.Function)
 	return
 }
 
@@ -35,13 +33,31 @@ func (k Keeper) Recharge(goctx context.Context, msg *fee.MsgRecharge) (res *fee.
 }
 
 // RechargeBatch implements fee.MsgServer
-func (Keeper) RechargeBatch(context.Context, *fee.MsgRechargeBatch) (*fee.MsgRechargeBatchResponse, error) {
-	panic("unimplemented")
+// implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Charge/Charge.sol#L81
+func (k Keeper) RechargeBatch(goctx context.Context, msg *fee.MsgRechargeBatch) (res *fee.MsgRechargeBatchResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	for i := range msg.To {
+		if err = k.checkRechargeAuth(ctx, msg.From, msg.To[i], msg.Amount[i]); err != nil {
+			return res, err
+		}
+		if err = k.recharge(ctx, msg.From, msg.To[i], msg.Amount[i]); err != nil {
+			return res, err
+		}
+	}
+	return
 }
 
 // RevokeDDC implements fee.MsgServer
-func (Keeper) RevokeDDC(context.Context, *fee.MsgRevokeDDC) (*fee.MsgRevokeDDCResponse, error) {
-	panic("unimplemented")
+// implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/Charge/Charge.sol#L164
+func (k Keeper) RevokeDDC(goctx context.Context, msg *fee.MsgRevokeDDC) (res *fee.MsgRevokeDDCResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	if err = k.requireOperator(ctx, msg.Operator); err != nil {
+		return res, err
+	}
+
+	store := k.prefixStore(ctx)
+	store.Delete(ddcAuthKey(msg.Protocol, msg.Denom))
+	return
 }
 
 // SetFeeRule implements fee.MsgServer
@@ -49,18 +65,17 @@ func (Keeper) RevokeDDC(context.Context, *fee.MsgRevokeDDC) (*fee.MsgRevokeDDCRe
 func (k Keeper) SetFeeRule(goctx context.Context, msg *fee.MsgSetFeeRule) (res *fee.MsgSetFeeRuleResponse, err error) {
 	ctx := sdk.UnwrapSDKContext(goctx)
 	if err = k.requireOperator(ctx, msg.Operator); err != nil {
-		return
+		return res, err
 	}
-	store := k.prefixStore(ctx)
-	store.Set(feeRuleKey(msg.Protocol, msg.Denom, msg.Function), sdk.Uint64ToBigEndian(uint64(msg.Fee)))
+	k.setFee(ctx, msg.Protocol, msg.Denom, msg.Function, uint64(msg.Fee))
 	return
 }
 
 // Settlement implements fee.MsgServer
-func (Keeper) Settlement(context.Context, *fee.MsgSettlement) (*fee.MsgSettlementResponse, error) {
-	panic("unimplemented")
-}
-
-func (k Keeper) requireOperator(ctx sdk.Context, sender string) error {
-	return k.authKeeper.CheckAvailableAndRole(ctx, sender, core.Role_OPERATOR)
+func (k Keeper) Settlement(goctx context.Context, msg *fee.MsgSettlement) (res *fee.MsgSettlementResponse, err error) {
+	ctx := sdk.UnwrapSDKContext(goctx)
+	if err = k.settlement(ctx, msg.Operator, msg.Protocol, msg.Denom, msg.Amount); err != nil {
+		return res, err
+	}
+	return
 }

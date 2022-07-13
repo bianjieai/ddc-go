@@ -2,6 +2,8 @@ package keeper
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
@@ -9,10 +11,10 @@ import (
 )
 
 var (
-	BalanceKey   = []byte{0x01}
-	FeeRuleKey   = []byte{0x02}
-	DenomAuthKey = []byte{0x03}
-	SupplyKey    = []byte{0x04}
+	BalanceKey = []byte{0x01}
+	FeeRuleKey = []byte{0x02}
+	DDCAuthKey = []byte{0x03}
+	SupplyKey  = []byte{0x04}
 
 	Delimiter   = []byte{0x00}
 	Placeholder = []byte{0x01}
@@ -46,4 +48,23 @@ func feeRuleKey(protocol core.Protocol, denom string, function core.Function) []
 	b.Write(Delimiter)
 	b.Write(dbz)
 	return b.Bytes()
+}
+
+func ddcAuthKey(protocol core.Protocol, denom string) []byte {
+	pbz := sdk.Uint64ToBigEndian(uint64(protocol))
+	dbz := []byte(denom)
+
+	len := len(DDCAuthKey) + len(pbz) + len(Delimiter) + len(dbz)
+	b := bytes.NewBuffer(make([]byte, 0, len))
+	b.Write(DDCAuthKey)
+	b.Write(pbz)
+	b.Write(Delimiter)
+	b.Write(dbz)
+	return b.Bytes()
+}
+
+func GetDDCEscrowAddress(protocol core.Protocol, denom string) sdk.AccAddress {
+	contents := fmt.Sprintf("%s/%s", protocol, denom)
+	hash := sha256.Sum256([]byte(contents))
+	return hash[:20]
 }
