@@ -86,7 +86,6 @@ message MsgBatchBurn {
   string denom = 2;
   repeated string token_ids = 3 [ (gogoproto.customname) = "TokenIDs" ];
   string operator = 4;
-  string owner = 5;
 }
 
 // MsgBatchBurnResponse defines the Msg/BatchBurn response type.
