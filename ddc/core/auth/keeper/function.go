@@ -77,14 +77,17 @@ func (k Keeper) hasFunctionPermission(ctx sdk.Context,
 	protocol core.Protocol,
 	denom string,
 	function core.Function,
-) bool {
+) error {
 	account, err := k.GetAccount(ctx, address)
 	if err != nil {
-		return false
+		return err
 	}
 	if k.isActive(account) {
-		return false
+		return sdkerrors.Wrapf(auth.ErrAccountNotActive, "account: %s is not active", address)
 	}
 
-	return k.hasFunction(ctx, account.Role, protocol, denom, function)
+	if k.hasFunction(ctx, account.Role, protocol, denom, function) {
+		return sdkerrors.Wrapf(auth.ErrFunctionNotExist, "function: %s not exist", function.String())
+	}
+	return nil
 }
