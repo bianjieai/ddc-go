@@ -186,7 +186,8 @@ func (m *QueryFunctionsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryFunctionsResponse proto.InternalMessageInfo
 
-// QuerySwitcherStateRequest is the request type for the Query/SwitcherState RPC method.
+// QuerySwitcherStateRequest is the request type for the Query/SwitcherState RPC
+// method.
 type QuerySwitcherStateRequest struct {
 }
 
@@ -223,8 +224,8 @@ func (m *QuerySwitcherStateRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QuerySwitcherStateRequest proto.InternalMessageInfo
 
-// QuerySwitcherStateResponse is the request type for the Query/SwitcherState RPC
-// method.
+// QuerySwitcherStateResponse is the request type for the Query/SwitcherState
+// RPC method.
 type QuerySwitcherStateResponse struct {
 	IsOpen bool `protobuf:"varint,1,opt,name=is_open,json=isOpen,proto3" json:"is_open,omitempty"`
 }
@@ -338,7 +339,8 @@ func (m *QueryDDCsResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryDDCsResponse proto.InternalMessageInfo
 
-// QueryCrossPlatformAbleRequest is the request type for the Query/CrossPlatformAble RPC method.
+// QueryCrossPlatformAbleRequest is the request type for the
+// Query/CrossPlatformAble RPC method.
 type QueryCrossPlatformAbleRequest struct {
 	From string `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
 	To   string `protobuf:"bytes,2,opt,name=to,proto3" json:"to,omitempty"`
@@ -377,8 +379,8 @@ func (m *QueryCrossPlatformAbleRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_QueryCrossPlatformAbleRequest proto.InternalMessageInfo
 
-// QueryCrossPlatformAbleResponse is the request type for the Query/CrossPlatformAble RPC
-// method.
+// QueryCrossPlatformAbleResponse is the request type for the
+// Query/CrossPlatformAble RPC method.
 type QueryCrossPlatformAbleResponse struct {
 	Enabled bool `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
 }

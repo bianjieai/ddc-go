@@ -1,48 +1,78 @@
 package keeper
 
-import "github.com/bianjieai/ddc-go/ddc/core"
+import (
+	"bytes"
+	"github.com/bianjieai/ddc-go/ddc/core"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+)
 
 var (
 	DDCApprovalKey     = []byte{0x01}
 	AccountApprovalKey = []byte{0x02}
 	TokenBlockListKey  = []byte{0x03}
+
+	Placeholder = []byte{0x01}
 )
 
 const (
 	SubModule = "token"
 )
 
-func ddcApprovalKey(denom, tokenID string) []byte {
-	str := denom + tokenID
-	key := make([]byte, len(DDCApprovalKey)+len(str))
-	copy(key, DDCApprovalKey)
-	copy(key[len(DDCApprovalKey):], str)
-	return key
+// DDCApprovalKey/Protocol/DenomID/TokenID
+func ddcApprovalKey(protocol core.Protocol,
+	denomID string,
+	tokenID string,
+) []byte {
+	pbz := sdk.Uint64ToBigEndian(uint64(protocol))
+	dbz := []byte(denomID)
+	tbz := []byte(tokenID)
+
+	length := len(DDCApprovalKey) + len(pbz) + len(dbz) + len(tbz)
+
+	b := bytes.NewBuffer(make([]byte, 0, length))
+	b.Write(DDCApprovalKey)
+	b.Write(pbz)
+	b.Write(dbz)
+	b.Write(tbz)
+	return b.Bytes()
 }
 
-func accountApprovalKey(denom, owner, operator string) []byte {
-	str := denom + owner + operator
-	key := make([]byte, len(AccountApprovalKey)+len(str))
-	copy(key, AccountApprovalKey)
-	copy(key[len(AccountApprovalKey):], str)
-	return key
+// AccountApprovalKey/Protocol/DenomID/Owner/Operator
+func accountApprovalKey(protocol core.Protocol,
+	denomID string,
+	owner string,
+	operator string,
+) []byte {
+	pbz := sdk.Uint64ToBigEndian(uint64(protocol))
+	dbz := []byte(denomID)
+	owbz := []byte(owner)
+	opbz := []byte(operator)
+
+	length := len(AccountApprovalKey) + len(pbz) + len(dbz) + len(owbz) + len(opbz)
+
+	b := bytes.NewBuffer(make([]byte, 0, length))
+	b.Write(AccountApprovalKey)
+	b.Write(pbz)
+	b.Write(dbz)
+	b.Write(owbz)
+	b.Write(opbz)
+	return b.Bytes()
 }
 
-func tokenBlocklistKey(denom, tokenID string) []byte {
-	str := denom + tokenID
-	key := make([]byte, len(TokenBlockListKey)+len(str))
-	copy(key, TokenBlockListKey)
-	copy(key[len(TokenBlockListKey):], str)
-	return key
-}
+// TokenBlockListKey/Protocol/DenomID/TokenID
+func tokenBlocklistKey(protocol core.Protocol,
+	denomID string,
+	tokenID string,
+) []byte {
+	pbz := sdk.Uint64ToBigEndian(uint64(protocol))
+	dbz := []byte(denomID)
+	tbz := []byte(tokenID)
 
-func appendProtocolPrefix(denom string, protocol core.Protocol) string {
-	var str string
-	switch protocol {
-	case core.Protocol_NFT:
-		str = core.Protocol_name[int32(protocol)]
-	case core.Protocol_MT:
-		str = core.Protocol_name[int32(protocol)]
-	}
-	return str + denom
+	length := len(TokenBlockListKey) + len(pbz) + len(dbz) + len(tbz)
+	b := bytes.NewBuffer(make([]byte, 0, length))
+	b.Write(TokenBlockListKey)
+	b.Write(pbz)
+	b.Write(dbz)
+	b.Write(tbz)
+	return b.Bytes()
 }

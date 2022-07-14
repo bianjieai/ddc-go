@@ -268,7 +268,7 @@ func NewSimApp(
 
 	app.NFTKeeper = nftkeeper.NewKeeper(appCodec, keys[nfttypes.StoreKey])
 	app.MTKeeper = mtkeeper.NewKeeper(appCodec, keys[mttypes.StoreKey])
-	app.DDCKeeper = ddckeeper.NewKeeper(appCodec, keys[ddc.StoreKey], app.GetSubspace(ddc.ModuleName))
+	app.DDCKeeper = ddckeeper.NewKeeper(appCodec, keys[ddc.StoreKey], app.NFTKeeper, app.MTKeeper, app.GetSubspace(ddc.ModuleName))
 
 	/****  Module Options ****/
 
