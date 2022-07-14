@@ -61,31 +61,75 @@ func (k Keeper) requireDisabledDDC(ctx sdk.Context,
 	return nil
 }
 
-// implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L837
-// NOTE: ddc721 and ddc1155 have different implementations
+// implement:
+// - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L837
+// - https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L690
 func (k Keeper) requireApprovedOrOwner(ctx sdk.Context,
 	protocol string,
 	denomID string,
 	tokenID string,
 	sender string,
 ) error {
-	var owner string
-	// TODO: require getting owner by Auth
+	var err error
+	switch protocol {
+	case core.Protocol_name[0]:
+		err = k.requireApprovedOrOwnerDDC721(ctx, protocol, denomID, tokenID, sender)
+	case core.Protocol_name[1]:
+		err = k.requireApprovedOrOwnerDDC1155(ctx, protocol, denomID, sender)
+	}
+	return err
+}
 
-	if owner == sender {
+// implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L837
+func (k Keeper) requireApprovedOrOwnerDDC721(ctx sdk.Context,
+	protocol string,
+	denomID string,
+	tokenID string,
+	sender string,
+) error {
+	// get owner
+	nft, err := k.nftKeeper.GetNFT(ctx, denomID, tokenID)
+	if err != nil {
+		return err
+	}
+
+	owner := nft.GetOwner().String()
+	if sender == owner {
 		return nil
 	}
 
 	proto := core.Protocol_value[protocol]
-	// getDDCApproval is called only when protocol is NFT
-	if core.Protocol(proto) == core.Protocol_NFT && k.getDDCApproval(ctx, core.Protocol(proto), denomID, tokenID) == sender {
+	if k.getDDCApproval(ctx, core.Protocol(proto), denomID, tokenID) == sender {
 		return nil
 	}
+
 	if k.isApprovedForAll(ctx, core.Protocol(proto), denomID, owner, sender) {
 		return nil
 	}
 
-	return sdkerrors.Wrapf(token.ErrRequireNotMet, "not owner nor approved")
+	return sdkerrors.Wrapf(token.ErrRequireNotMet, "operator is not approved nor owner")
+}
+
+// implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC1155/DDC1155.sol#L690
+func (k Keeper) requireApprovedOrOwnerDDC1155(ctx sdk.Context,
+	protocol string,
+	denomID string,
+	sender string,
+) error {
+	// TODO: get owner
+	var owner string
+	panic("owner is empty")
+
+	if sender == owner {
+		return nil
+	}
+
+	proto := core.Protocol_value[protocol]
+	if k.isApprovedForAll(ctx, core.Protocol(proto), denomID, owner, sender) {
+		return nil
+	}
+
+	return sdkerrors.Wrapf(token.ErrRequireNotMet, "operator is not approved nor owner")
 }
 
 // implement: https://github.com/bianjieai/tibc-ddc/blob/master/contracts/logic/DDC721/DDC721.sol#L436

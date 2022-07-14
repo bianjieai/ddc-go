@@ -62,8 +62,14 @@ func (k Keeper) batchBurnDDC1155(ctx sdk.Context,
 		return err
 	}
 
-	// TODO: getting owner of MT?
+	// TODO:
+	// var owners []string
+	// getOwners => owners
+	// for each tokenIDs
+	//   for each owner
+	//      do burn ...
 	var owner string
+	panic("owner is empty")
 	ownerAddr, err := sdk.AccAddressFromBech32(owner)
 	if err != nil {
 		return err
@@ -119,6 +125,9 @@ func (k Keeper) batchTransferDDC721(ctx sdk.Context,
 		if err != nil {
 			return err
 		}
+
+		// TODO: clearApprovals
+		// TODO: pay
 	}
 	return nil
 }
